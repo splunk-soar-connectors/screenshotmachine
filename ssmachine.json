@@ -13,6 +13,7 @@
     "product_name": "Screenshot Machine",
     "product_version_regex": ".*",
     "min_phantom_version": "4.10.0.40961",
+    "fips_compliant": false,
     "python_version": "3",
     "latest_tested_versions": [
         "Cloud, API api.screenshotmachine.com, September 29, 2021"
