@@ -1,2 +1,2 @@
 **Unreleased**
-* Removed 'pyc' files from the app tarball
+* Removed 'pyc' files from the app tarball [PAPP-23228]
