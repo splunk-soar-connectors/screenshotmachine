@@ -10,3 +10,11 @@ do you accept. **Allowed values are 0-14** . A zero value means always download 
 If you need a shorter interval than one day, you can use decimal numbers in the parameter, e.g.
 cacheLimit=0.041666 means: use image from cache only if it is not older than one HOUR
 (1/24=0.041666).
+
+## Port Information
+The app uses HTTP/ HTTPS protocol for communicating with the Screenshot Machine server. Below are the default ports used by Splunk SOAR.
+
+SERVICE NAME | TRANSPORT PROTOCOL | PORT
+------------ | ------------------ | ----
+**http** | tcp | 80
+**https** | tcp | 443

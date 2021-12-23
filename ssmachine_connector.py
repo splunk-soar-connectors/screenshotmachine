@@ -15,20 +15,21 @@
 #
 #
 # Phantom App imports
-from ssmachine_consts import *
-import phantom.app as phantom
-from phantom.base_connector import BaseConnector
-from phantom.action_result import ActionResult
-from phantom.vault import Vault as Vault
-import phantom.rules as ph_rules
-
+import hashlib
 # Imports local to this App
 import os
-import uuid
-import requests
-import hashlib
-from bs4 import BeautifulSoup
 import urllib.parse
+import uuid
+
+import phantom.app as phantom
+import phantom.rules as ph_rules
+import requests
+from bs4 import BeautifulSoup
+from phantom.action_result import ActionResult
+from phantom.base_connector import BaseConnector
+from phantom.vault import Vault as Vault
+
+from ssmachine_consts import *
 
 
 class RetVal(tuple):
@@ -127,7 +128,8 @@ class SsmachineConnector(BaseConnector):
             result.add_debug_data({'r_headers': r.headers})
 
         if "x-screenshotmachine-response" in list(r.headers.keys()):
-            return RetVal(result.set_status(phantom.APP_ERROR, "Screenshot Machine Returned an error: {0}".format(r.headers["x-screenshotmachine-response"])), None)
+            return RetVal(result.set_status(
+                phantom.APP_ERROR, "Screenshot Machine Returned an error: {0}".format(r.headers["x-screenshotmachine-response"])), None)
 
         if 'html' in r.headers.get('Content-Type', ''):
             return self._process_html_response(r, result)
@@ -141,11 +143,13 @@ class SsmachineConnector(BaseConnector):
 
         if not (200 <= r.status_code < 300):
             message = r.text.replace('{', '{{').replace('}', '}}')
-            return RetVal(result.set_status(phantom.APP_ERROR, "Call returned error, status_code: {0}, data: {1}".format(r.status_code, message)), None)
+            return RetVal(result.set_status(
+                phantom.APP_ERROR, "Call returned error, status_code: {0}, data: {1}".format(r.status_code, message)), None)
 
         if 'image' not in r.headers.get('Content-Type', ''):
             message = r.text.replace('{', '{{').replace('}', '}}')
-            return RetVal(result.set_status(phantom.APP_ERROR, "Response does not contain an image. status_code: {0}, data: {1}".format(r.status_code, message)), None)
+            return RetVal(result.set_status(
+                phantom.APP_ERROR, "Response does not contain an image. status_code: {0}, data: {1}".format(r.status_code, message)), None)
 
         # Things look fine
         return RetVal(phantom.APP_SUCCESS, r.content)
@@ -342,10 +346,11 @@ class SsmachineConnector(BaseConnector):
 
 if __name__ == '__main__':
 
-    import sys
-    import pudb
     import argparse
     import json
+    import sys
+
+    import pudb
 
     pudb.set_trace()
 
