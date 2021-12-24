@@ -7,12 +7,13 @@
     "type": "information",
     "license": "Copyright (c) 2016-2021 Splunk Inc.",
     "main_module": "ssmachine_connector.py",
-    "app_version": "2.1.0",
-    "utctime_updated": "2021-03-12T08:26:00.000000Z",
+    "app_version": "2.2.3",
+    "utctime_updated": "2021-12-24T07:47:27.000000Z",
     "product_vendor": "Screenshot Machine",
     "product_name": "Screenshot Machine",
     "product_version_regex": ".*",
-    "min_phantom_version": "4.10.0.40961",
+    "min_phantom_version": "5.0.0",
+    "fips_compliant": false,
     "python_version": "3",
     "latest_tested_versions": [
         "Cloud, API api.screenshotmachine.com, September 29, 2021"
@@ -200,5 +201,37 @@
             },
             "versions": "EQ(*)"
         }
-    ]
+    ],
+    "pip_dependencies": {
+        "wheel": [
+            {
+                "module": "beautifulsoup4",
+                "input_file": "wheels/beautifulsoup4-4.9.1-py3-none-any.whl"
+            },
+            {
+                "module": "certifi",
+                "input_file": "wheels/certifi-2021.10.8-py2.py3-none-any.whl"
+            },
+            {
+                "module": "chardet",
+                "input_file": "wheels/chardet-3.0.4-py2.py3-none-any.whl"
+            },
+            {
+                "module": "idna",
+                "input_file": "wheels/idna-2.10-py2.py3-none-any.whl"
+            },
+            {
+                "module": "requests",
+                "input_file": "wheels/requests-2.25.0-py2.py3-none-any.whl"
+            },
+            {
+                "module": "soupsieve",
+                "input_file": "wheels/soupsieve-2.3-py3-none-any.whl"
+            },
+            {
+                "module": "urllib3",
+                "input_file": "wheels/urllib3-1.26.7-py2.py3-none-any.whl"
+            }
+        ]
+    }
 }
