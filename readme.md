@@ -2,7 +2,7 @@
 # Screenshot Machine
 
 Publisher: Splunk  
-Connector Version: 2\.2\.2  
+Connector Version: 2\.2\.3  
 Product Vendor: Screenshot Machine  
 Product Name: Screenshot Machine  
 Product Version Supported (regex): "\.\*"  
