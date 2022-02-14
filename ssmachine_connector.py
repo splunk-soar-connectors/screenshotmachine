@@ -127,7 +127,7 @@ class SsmachineConnector(BaseConnector):
             result.add_debug_data({'r_text': r.text })
             result.add_debug_data({'r_headers': r.headers})
 
-        if SSMACHINE_CUSTOM_HTTP_RESPONSE_HEADER in list(r.headers.keys()):
+        if SSMACHINE_CUSTOM_HTTP_RESPONSE_HEADER in r.headers:
             return RetVal(result.set_status(
                 phantom.APP_ERROR, "Screenshot Machine Returned an error: {0}".format(r.headers[SSMACHINE_CUSTOM_HTTP_RESPONSE_HEADER])), None)
 
