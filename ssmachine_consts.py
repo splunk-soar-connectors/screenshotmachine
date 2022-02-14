@@ -21,3 +21,4 @@ VALID_CACHE_LIMIT_MSG = "Please provide a valid value in the 'Cache Limit' confi
 ERR_CODE_MSG = "Error code unavailable"
 ERR_MSG_UNAVAILABLE = "Error message unavailable. Please check the asset configuration and|or action parameters"
 PARSE_ERR_MSG = "Unable to parse the error message. Please check the asset configuration and|or action parameters"
+SSMACHINE_CUSTOM_HTTP_RESPONSE_HEADER = "X-Screenshotmachine-Response"

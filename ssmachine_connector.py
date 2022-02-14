@@ -127,9 +127,9 @@ class SsmachineConnector(BaseConnector):
             result.add_debug_data({'r_text': r.text })
             result.add_debug_data({'r_headers': r.headers})
 
-        if "x-screenshotmachine-response" in list(r.headers.keys()):
+        if SSMACHINE_CUSTOM_HTTP_RESPONSE_HEADER in list(r.headers.keys()):
             return RetVal(result.set_status(
-                phantom.APP_ERROR, "Screenshot Machine Returned an error: {0}".format(r.headers["x-screenshotmachine-response"])), None)
+                phantom.APP_ERROR, "Screenshot Machine Returned an error: {0}".format(r.headers[SSMACHINE_CUSTOM_HTTP_RESPONSE_HEADER])), None)
 
         if 'html' in r.headers.get('Content-Type', ''):
             return self._process_html_response(r, result)
