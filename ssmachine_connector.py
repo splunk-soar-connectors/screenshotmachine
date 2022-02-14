@@ -49,10 +49,10 @@ class SsmachineConnector(BaseConnector):
 
         config = self.get_config()
 
-        self._api_key = config.get("ssmachine_key")
-        self._api_phrase = config.get("ssmachine_hash")
-        self._rest_url = "{0}".format(SSMACHINE_JSON_DOMAIN)
-        cache_limit = config.get("cache_limit", DEFAULT_CACHE_LIMIT)
+        self._api_key = config.get('ssmachine_key')
+        self._api_phrase = config.get('ssmachine_hash')
+        self._rest_url = '{0}'.format(SSMACHINE_JSON_DOMAIN)
+        cache_limit = config.get('cache_limit', DEFAULT_CACHE_LIMIT)
         try:
             if DEFAULT_CACHE_LIMIT <= float(cache_limit) <= MAX_CACHE_LIMIT:
                 self.cache_limit = float(cache_limit)
@@ -86,9 +86,9 @@ class SsmachineConnector(BaseConnector):
 
         try:
             if error_code in ERR_CODE_MSG:
-                error_text = "Error Message: {0}".format(error_msg)
+                error_text = 'Error Message: {0}'.format(error_msg)
             else:
-                error_text = "Error Code: {0}. Error Message: {1}".format(error_code, error_msg)
+                error_text = 'Error Code: {0}. Error Message: {1}'.format(error_code, error_msg)
         except:
             self.debug_print(PARSE_ERR_MSG)
             error_text = PARSE_ERR_MSG
@@ -101,18 +101,18 @@ class SsmachineConnector(BaseConnector):
         status_code = response.status_code
 
         try:
-            soup = BeautifulSoup(response.text, "html.parser")
+            soup = BeautifulSoup(response.text, 'html.parser')
             # Remove the script, style, footer and navigation part from the HTML message
-            for element in soup(["script", "style", "footer", "nav"]):
+            for element in soup(['script', 'style', 'footer', 'nav']):
                 element.extract()
             error_text = soup.text
             split_lines = error_text.split('\n')
             split_lines = [x.strip() for x in split_lines if x.strip()]
             error_text = '\n'.join(split_lines)
         except:
-            error_text = "Cannot parse error details"
+            error_text = 'Cannot parse error details'
 
-        message = "Status Code: {0}. Data from server:\n{1}\n".format(status_code,
+        message = 'Status Code: {0}. Data from server:\n{1}\n'.format(status_code,
                 error_text)
 
         message = message.replace('{', '{{').replace('}', '}}')
@@ -129,7 +129,7 @@ class SsmachineConnector(BaseConnector):
 
         if SSMACHINE_CUSTOM_HTTP_RESPONSE_HEADER in r.headers:
             return RetVal(result.set_status(
-                phantom.APP_ERROR, "Screenshot Machine Returned an error: {0}".format(r.headers[SSMACHINE_CUSTOM_HTTP_RESPONSE_HEADER])), None)
+                phantom.APP_ERROR, 'Screenshot Machine Returned an error: {0}'.format(r.headers[SSMACHINE_CUSTOM_HTTP_RESPONSE_HEADER])), None)
 
         if 'html' in r.headers.get('Content-Type', ''):
             return self._process_html_response(r, result)
@@ -144,19 +144,22 @@ class SsmachineConnector(BaseConnector):
         if not (200 <= r.status_code < 300):
             message = r.text.replace('{', '{{').replace('}', '}}')
             return RetVal(result.set_status(
-                phantom.APP_ERROR, "Call returned error, status_code: {0}, data: {1}".format(r.status_code, message)), None)
+                phantom.APP_ERROR, 'Call returned error, status_code: {0}, data: {1}'.format(r.status_code, message)), None)
 
         if 'image' not in r.headers.get('Content-Type', ''):
             message = r.text.replace('{', '{{').replace('}', '}}')
             return RetVal(result.set_status(
-                phantom.APP_ERROR, "Response does not contain an image. status_code: {0}, data: {1}".format(r.status_code, message)), None)
+                phantom.APP_ERROR, 'Response does not contain an image. status_code: {0}, data: {1}'.format(r.status_code, message)), None)
 
         # Things look fine
         return RetVal(phantom.APP_SUCCESS, r.content)
 
-    def _make_rest_call(self, endpoint, result, params={}, headers={}, json=None, method="get", stream=False):
+    def _make_rest_call(self, endpoint, result, params={}, headers=None, json=None, method='get', stream=False):
 
-        url = "{0}{1}".format(self._rest_url, endpoint)
+        url = '{0}{1}'.format(self._rest_url, endpoint)
+
+        if headers is None:
+            headers = {}
 
         if self._headers is not None:
             (headers.update(self._headers))
@@ -164,16 +167,16 @@ class SsmachineConnector(BaseConnector):
         try:
             request_func = getattr(requests, method)
         except AttributeError:
-            return result.set_status(phantom.APP_ERROR, "Invalid method: {0}".format(method)), None
+            return result.set_status(phantom.APP_ERROR, 'Invalid method: {0}'.format(method)), None
 
         if not request_func:
-            return result.set_status(phantom.APP_ERROR, "Invalid method call: {0} for requests module".format(method)), None
+            return result.set_status(phantom.APP_ERROR, 'Invalid method call: {0} for requests module'.format(method)), None
 
         try:
             r = request_func(url, headers=headers, params=params, json=json, stream=stream, verify=True)
         except Exception as e:
             err = self._get_error_message_from_exception(e)
-            error_msg = "REST API call to server failed. {}".format(err)
+            error_msg = 'REST API call to server failed. {}'.format(err)
             return result.set_status(phantom.APP_ERROR, error_msg), None
 
         ret_val, resp_data = self._parse_response(result, r)
@@ -190,14 +193,14 @@ class SsmachineConnector(BaseConnector):
         self.add_action_result(action_result)
 
         params = dict()
-        params['url'] = "https://www.screenshotmachine.com"
-        self.save_progress("Checking to see if Screenshotmachine.com is online...")
+        params['url'] = 'https://www.screenshotmachine.com'
+        self.save_progress('Checking to see if Screenshotmachine.com is online...')
 
         params['key'] = self._api_key
 
         # Check if we have a Secret Phrase
         if self._api_phrase is None:
-            params['hash'] = ""
+            params['hash'] = ''
         else:
             params['hash'] = str(hashlib.md5((params['url'] + self._api_phrase).encode('utf-8')).hexdigest())
 
@@ -208,8 +211,8 @@ class SsmachineConnector(BaseConnector):
             action_result.append_to_message('Test connectivity failed')
             return action_result.get_status()
 
-        self.save_progress("Test Connectivity Passed")
-        return action_result.set_status(ret_val, "Test Connectivity Passed")
+        self.save_progress('Test Connectivity Passed')
+        return action_result.set_status(ret_val, 'Test Connectivity Passed')
 
     def _handle_post_url(self, param):
 
@@ -217,25 +220,25 @@ class SsmachineConnector(BaseConnector):
         self.add_action_result(action_result)
 
         params = dict()
-        params['url'] = param["url"]
+        params['url'] = param['url']
         params['filename'] = param.get('filename')
         params['key'] = self._api_key
 
         # Check if we have a size
-        sizes = {"tiny": "T", "small": "S", "normal": "N", "medium": "M", "large": "L", "full page": "F"}
-        test = param.get("size")
+        sizes = {'tiny': 'T', 'small': 'S', 'normal': 'N', 'medium': 'M', 'large': 'L', 'full page': 'F'}
+        test = param.get('size')
         if not test:
-            self.save_progress("Size was blank, using the default \"full page\" size")
-            test = "full page"
+            self.save_progress('Size was blank, using the default "full page" size')
+            test = 'full page'
         if not sizes.get(test.lower()):
-            self.save_progress("Given size not found, using the default \"full page\" size")
-            params['size'] = "F"
+            self.save_progress('Given size not found, using the default "full page" size')
+            params['size'] = 'F'
         else:
             params['size'] = sizes[test.lower()]
 
         # Check if we have a Secret Phrase
         if self._api_phrase is None:
-            params['hash'] = ""
+            params['hash'] = ''
         else:
             params['hash'] = str(hashlib.md5((params['url'] + self._api_phrase).encode('utf-8')).hexdigest())
 
@@ -253,19 +256,19 @@ class SsmachineConnector(BaseConnector):
             permalink = self._get_sspermalink('', params=params, method='post')
 
         if params['filename']:
-            file_name = "{}.jpg".format(params['filename'])
+            file_name = '{}.jpg'.format(params['filename'])
         else:
-            file_name = "{0}{1}".format(param["url"], "_screenshot.jpg")
+            file_name = '{0}{1}'.format(param['url'], '_screenshot.jpg')
 
         is_download = False
-        if hasattr(Vault, "create_attachment"):
+        if hasattr(Vault, 'create_attachment'):
             vault_ret = Vault.create_attachment(image, self.get_container_id(), file_name=file_name)
 
             if vault_ret.get('succeeded'):
-                action_result.set_status(phantom.APP_SUCCESS, "Downloaded screenshot")
+                action_result.set_status(phantom.APP_SUCCESS, 'Downloaded screenshot')
                 _, _, vault_meta_info = ph_rules.vault_info(container_id=self.get_container_id(), vault_id=vault_ret[phantom.APP_JSON_HASH])
                 if not vault_meta_info:
-                    self.debug_print("Error while fetching meta information for vault ID: {}".format(vault_ret[phantom.APP_JSON_HASH]))
+                    self.debug_print('Error while fetching meta information for vault ID: {}'.format(vault_ret[phantom.APP_JSON_HASH]))
                     return action_result.set_status(phantom.APP_ERROR, "Could not find meta information of the downloaded screenshot's Vault")
 
                 vault_path = list(vault_meta_info)[0]['path']
@@ -285,7 +288,7 @@ class SsmachineConnector(BaseConnector):
                 temp_dir = Vault.get_vault_tmp_dir()
             else:
                 temp_dir = '/opt/phantom/vault/tmp'
-            temp_dir = "{0}{1}".format(temp_dir, '/{}'.format(uuid.uuid4()))
+            temp_dir = '{0}{1}'.format(temp_dir, '/{}'.format(uuid.uuid4()))
             os.makedirs(temp_dir)
             file_path = os.path.join(temp_dir, 'tempimage.jpg')
 
@@ -295,10 +298,10 @@ class SsmachineConnector(BaseConnector):
             success, message, vault_id = ph_rules.vault_add(container=self.get_container_id(), file_location=file_path, file_name=file_name)
 
             if success:
-                action_result.set_status(phantom.APP_SUCCESS, "Downloaded screenshot")
+                action_result.set_status(phantom.APP_SUCCESS, 'Downloaded screenshot')
                 _, _, vault_meta_info = ph_rules.vault_info(container_id=self.get_container_id(), vault_id=vault_id)
                 if not vault_meta_info:
-                    self.debug_print("Error while fetching meta information for vault ID: {}".format(vault_id))
+                    self.debug_print('Error while fetching meta information for vault ID: {}'.format(vault_id))
                     return action_result.set_status(phantom.APP_ERROR, "Could not find meta information of the downloaded screenshot's Vault")
 
                 vault_path = list(vault_meta_info)[0]['path']
@@ -311,13 +314,13 @@ class SsmachineConnector(BaseConnector):
                     summary['permalink'] = permalink
                 action_result.update_summary(summary)
             else:
-                return action_result.set_status(phantom.APP_ERROR, "Error occurred while saving file to vault: {}".format(message))
+                return action_result.set_status(phantom.APP_ERROR, 'Error occurred while saving file to vault: {}'.format(message))
 
         return action_result.get_status()
 
     def _get_sspermalink(self, endpoint, params, method='get'):
         method = method.upper()
-        url = "{0}{1}".format(self._rest_url, endpoint)
+        url = '{0}{1}'.format(self._rest_url, endpoint)
         # allow the permalink to retrieve from cache
         params.pop('cacheLimit', None)
         req = requests.Request(method=method, url=url, params=params)
@@ -334,9 +337,9 @@ class SsmachineConnector(BaseConnector):
         # Get the action that we are supposed to execute for this App Run
         action_id = self.get_action_identifier()
 
-        self.debug_print("action_id", self.get_action_identifier())
+        self.debug_print('action_id', self.get_action_identifier())
 
-        if action_id == "get_screenshot":
+        if action_id == 'get_screenshot':
             ret_val = self._handle_post_url(param)
         elif action_id == phantom.ACTION_ID_TEST_ASSET_CONNECTIVITY:
             ret_val = self._test_connectivity(param)
@@ -359,23 +362,25 @@ if __name__ == '__main__':
     argparser.add_argument('input_test_json', help='Input Test JSON file')
     argparser.add_argument('-u', '--username', help='username', required=False)
     argparser.add_argument('-p', '--password', help='password', required=False)
+    argparser.add_argument('-v', '--verify', action='store_true', help='verify', required=False, default=False)
 
     args = argparser.parse_args()
     session_id = None
 
     username = args.username
     password = args.password
+    verify = args.verify
 
     if username is not None and password is None:
 
         # User specified a username but not a password, so ask
         import getpass
-        password = getpass.getpass("Password: ")
+        password = getpass.getpass('Password: ')
 
     if username and password:
         try:
-            print("Accessing the Login page")
-            r = requests.get(BaseConnector._get_phantom_base_url() + "login", verify=False)
+            print('Accessing the Login page')
+            r = requests.get(BaseConnector._get_phantom_base_url() + 'login', verify=verify, timeout=DEFAULT_REQUEST_TIMEOUT)
             csrftoken = r.cookies['csrftoken']
 
             data = dict()
@@ -387,16 +392,17 @@ if __name__ == '__main__':
             headers['Cookie'] = 'csrftoken=' + csrftoken
             headers['Referer'] = BaseConnector._get_phantom_base_url() + 'login'
 
-            print("Logging into Platform to get the session id")
-            r2 = requests.post(BaseConnector._get_phantom_base_url() + "login", verify=False, data=data, headers=headers)
+            print('Logging into Platform to get the session id')
+            r2 = requests.post(BaseConnector._get_phantom_base_url() + 'login', verify=verify,
+                               data=data, headers=headers, timeout=DEFAULT_REQUEST_TIMEOUT)
             session_id = r2.cookies['sessionid']
         except Exception as e:
-            print("Unable to get session id from the platfrom. Error: " + str(e))
-            exit(1)
+            print('Unable to get session id from the platfrom. Error: ' + str(e))
+            sys.exit(1)
 
     if len(sys.argv) < 2:
-        print("No test json specified as input")
-        exit(0)
+        print('No test json specified as input')
+        sys.exit(0)
 
     with open(sys.argv[1]) as f:
         in_json = f.read()
@@ -412,4 +418,4 @@ if __name__ == '__main__':
         ret_val = connector._handle_action(json.dumps(in_json), None)
         print(json.dumps(json.loads(ret_val), indent=4))
 
-    exit(0)
+    sys.exit(0)
