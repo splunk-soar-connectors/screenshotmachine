@@ -1,1 +1,2 @@
 **Unreleased**
+* Fixed an issue with case sensitive checks in response headers [PAPP-24322]
