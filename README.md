@@ -2,7 +2,7 @@
 # Screenshot Machine
 
 Publisher: Splunk  
-Connector Version: 2.2.4  
+Connector Version: 3.0.0  
 Product Vendor: Screenshot Machine  
 Product Name: Screenshot Machine  
 Product Version Supported (regex): ".\*"  
@@ -15,6 +15,14 @@ This app integrates with the Screenshot Machine service
 [comment]: # ""
 [comment]: # "  Licensed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt)"
 [comment]: # ""
+
+## Backward Compatibility
+
+In v3.0.0, For **get screenshot** action, 'size' parameter has been renamed with 'dimension'. Hence, it is requested to the
+end-user to please update their existing playbooks by re-inserting | modifying | deleting the
+corresponding action blocks to ensure the correct functioning of the playbooks created on the
+earlier versions of the app. 
+
 ## Asset Configuration
 
 By using the **cache_limit** configuration parameter you can manage how old(in days) cached images
@@ -41,7 +49,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
 **ssmachine_key** |  required  | password | API Key
 **ssmachine_hash** |  optional  | password | API Secret Phrase
-**cache_limit** |  optional  | numeric | Cache Limit (how old cached images are accepted (in days), Default: 0)
+**cache_limit** |  optional  | numeric | Cache Limit (how old cached images are accepted (in days), Default: 0, Allowed range: 0 to 14)
 
 ### Supported Actions  
 [test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration  
@@ -71,13 +79,13 @@ For the <b>dimensions</b> parameter, follow the instructions below<br> <ul> <li>
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
 **url** |  required  | URL to screenshot | string |  `url`  `domain` 
-**dimensions** |  optional  | Size of the web snapshot or webpage screenshot in format [width]x[height]. Default value is 120x90 | string | 
+**dimension** |  optional  | Size of the web snapshot or webpage screenshot in format [width]x[height]. Default value is 120x90 | string | 
 **filename** |  optional  | The filename for storing the screenshot in the Vault | string | 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
-action_result.parameter.size | string |  |   Full Page  Small  Normal  Medium  Large  Tiny 
+action_result.parameter.dimension | string |  |   122x123  123xfull 
 action_result.parameter.url | string |  `url`  `domain`  |   https://www.testurl.com 
 action_result.parameter.filename | string |  |  
 action_result.data | string |  |  
