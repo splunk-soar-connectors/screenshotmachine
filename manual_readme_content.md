@@ -3,6 +3,14 @@
 [comment]: # ""
 [comment]: # "  Licensed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt)"
 [comment]: # ""
+
+## Backward Compatibility
+
+In v3.0.0, For **get screenshot** action, 'size' parameter has been renamed with 'dimension'. Hence, it is requested to the
+end-user to please update their existing playbooks by re-inserting | modifying | deleting the
+corresponding action blocks to ensure the correct functioning of the playbooks created on the
+earlier versions of the app. 
+
 ## Asset Configuration
 
 By using the **cache_limit** configuration parameter you can manage how old(in days) cached images

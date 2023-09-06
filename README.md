@@ -2,11 +2,11 @@
 # Screenshot Machine
 
 Publisher: Splunk  
-Connector Version: 2\.2\.4  
+Connector Version: 2.2.4  
 Product Vendor: Screenshot Machine  
 Product Name: Screenshot Machine  
-Product Version Supported (regex): "\.\*"  
-Minimum Product Version: 5\.1\.0  
+Product Version Supported (regex): ".\*"  
+Minimum Product Version: 6.0.2  
 
 This app integrates with the Screenshot Machine service
 
@@ -39,9 +39,9 @@ The below configuration variables are required for this Connector to operate.  T
 
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
-**ssmachine\_key** |  required  | password | API Key
-**ssmachine\_hash** |  optional  | password | API Secret Phrase
-**cache\_limit** |  optional  | numeric | Cache Limit \(how old cached images are accepted \(in days\), Default\: 0\)
+**ssmachine_key** |  required  | password | API Key
+**ssmachine_hash** |  optional  | password | API Secret Phrase
+**cache_limit** |  optional  | numeric | Cache Limit (how old cached images are accepted (in days), Default: 0)
 
 ### Supported Actions  
 [test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration  
@@ -65,28 +65,28 @@ Get a screenshot of a URL
 Type: **investigate**  
 Read only: **True**
 
-The supported size types are\:<ul><li>Tiny\: \(120 x 90px\)</li><li>Small\: \(200 x 150px\)</li><li>Normal\: \(400 x 300px\)</li><li>Medium\: \(640 x 480px\)</li><li>Large\: \(800 x 600px\)</li><li>Full Page\: Complete page from the top to the bottom \(can be pretty long\)</li></ul><p>Sizes are passed with their full names \(e\.g\. <b>Tiny</b>, or <b>Full Page</b>\)\. The default size is <b>Full Page</b> if no size is defined\.
+For the <b>dimensions</b> parameter, follow the instructions below<br> <ul> <li>value should be in format [width]x[height]. Default value is 120x90.</li><li>width can be any <b>natural number greater than or equals to 100 and smaller or equals to 1920.</b></li><li>height can be any <b>natural number greater than or equals to 100 and smaller or equals to 9999.</b> Also <b>full</b> value is accepted if you want to capture full length webpage screenshot.</li></ul>Examples:<br>320x240 - website thumbnail size 320x240 pixels<br>800x600 - website snapshot size 800x600 pixels<br>1024x768 - web screenshot size 1024x768 pixels<br>1920x1080 - webpage screenshot size 1920x1080 pixels<br>1024xfull - full page screenshot with width equals to 1024 pixels (can be pretty long)
 
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
 **url** |  required  | URL to screenshot | string |  `url`  `domain` 
-**size** |  optional  | Size of the screenshot | string | 
+**dimensions** |  optional  | Size of the web snapshot or webpage screenshot in format [width]x[height]. Default value is 120x90 | string | 
 **filename** |  optional  | The filename for storing the screenshot in the Vault | string | 
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.parameter\.size | string | 
-action\_result\.parameter\.url | string |  `url`  `domain` 
-action\_result\.parameter\.filename | string | 
-action\_result\.data | string | 
-action\_result\.status | string | 
-action\_result\.message | string | 
-action\_result\.summary\.name | string |  `url` 
-action\_result\.summary\.permalink | string |  `url` 
-action\_result\.summary\.size | numeric | 
-action\_result\.summary\.vault\_file\_path | string | 
-action\_result\.summary\.vault\_id | string |  `vault id`  `sha1` 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric | 
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.parameter.size | string |  |   Full Page  Small  Normal  Medium  Large  Tiny 
+action_result.parameter.url | string |  `url`  `domain`  |   https://www.testurl.com 
+action_result.parameter.filename | string |  |  
+action_result.data | string |  |  
+action_result.status | string |  |   success  failed 
+action_result.message | string |  |   Downloaded screenshot 
+action_result.summary.name | string |  `url`  |   https://www.testurl.com_screenshot.jpg 
+action_result.summary.permalink | string |  `url`  |  
+action_result.summary.size | numeric |  |   48692 
+action_result.summary.vault_file_path | string |  |   /opt/phantom/vault/02/5a/025a0aed68c79a9dc14fa11654ed9a21d521f79e 
+action_result.summary.vault_id | string |  `vault id`  `sha1`  |   025a0aed68c79a9dc14fa11654ed9a21d521f79e 
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1 
