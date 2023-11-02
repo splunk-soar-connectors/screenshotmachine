@@ -229,7 +229,7 @@ class SsmachineConnector(BaseConnector):
             permalink = self._get_sspermalink(params=params, method='post')
 
         file_name = '{}.jpg'.format(params['filename']) if params['filename'] else '{0}{1}'.format(
-            param['url'], '_screenshot.gif')
+            param['url'], '_screenshot.jpg')
 
         if hasattr(Vault, 'get_vault_tmp_dir'):
             temp_dir = Vault.get_vault_tmp_dir()
