@@ -18,12 +18,11 @@ SSMACHINE_DEFAULT_DIMENSION = '120x90'
 MAX_CACHE_LIMIT = 14
 DEFAULT_CACHE_LIMIT = 0
 VALID_CACHE_LIMIT_MSG = "Please provide a valid value in the 'Cache Limit' configuration parameter, the allowed range is [0-14]"
-SSMACHINE_VALIDATE_INTEGER_MESSAGE = "Please provide a valid integer value in the {key} parameter"
 
 # Constants relating to '_get_error_message_from_exception'
 ERROR_CODE_MSG = 'Error code unavailable'
 ERROR_MSG_UNAVAILABLE = 'Error message unavailable. Please check the asset configuration and|or action parameters'
-PARSE_ERR_MSG = 'Unable to parse the error message. Please check the asset configuration and|or action parameters'
+PARSE_ERROR_MSG = 'Unable to parse the error message. Please check the asset configuration and|or action parameters'
 SSMACHINE_UNAVAILABLE_MSG_ERROR = "Error message unavailable. Please check the asset configuration and|or action parameters"
 SSMACHINE_CUSTOM_HTTP_RESPONSE_HEADER = 'X-Screenshotmachine-Response'
 DEFAULT_REQUEST_TIMEOUT = 60  # in seconds
