@@ -214,7 +214,7 @@ class SsmachineConnector(BaseConnector):
             'filename': param.get('filename'),
             'dimension': param.get('dimension', SSMACHINE_DEFAULT_DIMENSION),
             'format': 'JPG',
-            'delay': '200',
+            'delay': param.get('delay', SSMACHINE_DEFAULT_DELAY),
             'hash': str(hashlib.md5(f"{param['url']}{self._api_phrase}".encode('utf-8')).hexdigest())
             if self._api_phrase else ''  # Check if we have a Secret Phrase
         }
@@ -275,8 +275,12 @@ class SsmachineConnector(BaseConnector):
         url = self._rest_url
         # allow the permalink to retrieve from cache
         params.pop('cacheLimit', None)
-        req = requests.Request(method=method, url=url, params=params)
-        r = req.prepare()
+        try:
+            req = requests.Request(method=method, url=url, params=params)
+            r = req.prepare()
+        except Exception as ex:
+            self.debug_print(self._get_error_message_from_exception(ex))
+            return None
         try:
             return urllib.parse.unquote(r.url)
         except:

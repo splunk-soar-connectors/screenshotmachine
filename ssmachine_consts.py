@@ -15,6 +15,7 @@
 
 SSMACHINE_JSON_DOMAIN = 'https://api.screenshotmachine.com/'
 SSMACHINE_DEFAULT_DIMENSION = '120x90'
+SSMACHINE_DEFAULT_DELAY = '200'
 MAX_CACHE_LIMIT = 14
 DEFAULT_CACHE_LIMIT = 0
 VALID_CACHE_LIMIT_MSG = "Please provide a valid value in the 'Cache Limit' configuration parameter, the allowed range is [0-14]"

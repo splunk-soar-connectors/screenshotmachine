@@ -73,14 +73,15 @@ Get a screenshot of a URL
 Type: **investigate**  
 Read only: **True**
 
-For the <b>dimensions</b> parameter, follow the instructions below<br> <ul> <li>value should be in format [width]x[height]. Default value is 120x90.</li><li>width can be any <b>natural number greater than or equals to 100 and smaller or equals to 1920.</b></li><li>height can be any <b>natural number greater than or equals to 100 and smaller or equals to 9999.</b> Also <b>full</b> value is accepted if you want to capture full length webpage screenshot.</li></ul>Examples:<br>320x240 - website thumbnail size 320x240 pixels<br>800x600 - website snapshot size 800x600 pixels<br>1024x768 - web screenshot size 1024x768 pixels<br>1920x1080 - webpage screenshot size 1920x1080 pixels<br>1024xfull - full page screenshot with width equals to 1024 pixels (can be pretty long).
+For the <b>dimensions</b> parameter, follow the instructions below<br> <ul> <li>value should be in format [width]x[height]. Default value is 120x90.</li><li>width can be any <b>natural number greater than or equals to 100 and smaller or equals to 1920.</b></li><li>height can be any <b>natural number greater than or equals to 100 and smaller or equals to 9999.</b> Also <b>full</b> value is accepted if you want to capture full length webpage screenshot.</li></ul>Examples:<br>320x240 - website thumbnail size 320x240 pixels<br>800x600 - website snapshot size 800x600 pixels<br>1024x768 - web screenshot size 1024x768 pixels<br>1920x1080 - webpage screenshot size 1920x1080 pixels<br>1024xfull - full page screenshot with width equals to 1024 pixels (can be pretty long).<br><br> For <b>delay</b> parameter, Use higher values for websites which take more to time load before capturing the screenshot. <br> Allowed values are: (0, 200,400, 600, 800, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000)
 
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
 **url** |  required  | URL to screenshot | string |  `url`  `domain` 
-**dimension** |  optional  | Size of the web snapshot or webpage screenshot in format [width]x[height]. Default value is 120x90 | string | 
+**dimension** |  optional  | Size of the web snapshot or webpage screenshot in format [width]x[height]. (Default: 120x90) | string | 
 **filename** |  optional  | The filename for storing the screenshot in the Vault | string | 
+**delay** |  optional  | Based on delay value capturing engine should wait before the screenshot is created, (Default: 200) | string | 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
