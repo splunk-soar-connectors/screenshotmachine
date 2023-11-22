@@ -6,7 +6,7 @@ Connector Version: 3.0.0
 Product Vendor: Screenshot Machine  
 Product Name: Screenshot Machine  
 Product Version Supported (regex): ".\*"  
-Minimum Product Version: 6.0.2  
+Minimum Product Version: 6.1.0  
 
 This app integrates with the Screenshot Machine service
 
@@ -87,7 +87,7 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.status | string |  |   success  failed 
-action_result.parameter.delay | string |  |   100  3000 
+action_result.parameter.delay | string |  |   200  3000 
 action_result.parameter.dimension | string |  |   122x123  123xfull 
 action_result.parameter.filename | string |  |  
 action_result.parameter.url | string |  `url`  `domain`  |   https://www.testurl.com 
