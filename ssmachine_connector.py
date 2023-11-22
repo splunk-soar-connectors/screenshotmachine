@@ -22,7 +22,6 @@ import tempfile
 import urllib.parse
 import uuid
 
-from phantom_common import paths
 import phantom.app as phantom
 import phantom.rules as ph_rules
 import requests
@@ -30,6 +29,7 @@ from bs4 import BeautifulSoup
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 from phantom.vault import Vault as Vault
+from phantom_common import paths
 
 from ssmachine_consts import *
 
