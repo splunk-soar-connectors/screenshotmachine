@@ -21,6 +21,7 @@ import os
 import urllib.parse
 import uuid
 
+from phantom_common import paths
 import phantom.app as phantom
 import phantom.rules as ph_rules
 import requests
@@ -234,7 +235,7 @@ class SsmachineConnector(BaseConnector):
         if hasattr(Vault, 'get_vault_tmp_dir'):
             temp_dir = Vault.get_vault_tmp_dir()
         else:
-            temp_dir = '/opt/phantom/vault/tmp'
+            temp_dir = os.path.join(paths.PHANTOM_VAULT, "tmp")
 
         temp_dir = '{0}{1}'.format(temp_dir, '/{}'.format(uuid.uuid4()))
         os.makedirs(temp_dir)
@@ -268,7 +269,7 @@ class SsmachineConnector(BaseConnector):
         action_result.update_summary(summary)
         self.debug_print("Successfully added file to the vault")
 
-        return action_result.set_status(phantom.APP_SUCCESS, "Screenshot Downloaded successfully")
+        return action_result.set_status(phantom.APP_SUCCESS, "Screenshot downloaded successfully")
 
     def _get_sspermalink(self, params, method='get'):
         method = method.upper()
