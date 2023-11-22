@@ -20,7 +20,6 @@ import hashlib
 import os
 import tempfile
 import urllib.parse
-import uuid
 
 import phantom.app as phantom
 import phantom.rules as ph_rules
