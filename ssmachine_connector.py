@@ -18,6 +18,7 @@
 import hashlib
 # Imports local to this App
 import os
+import tempfile
 import urllib.parse
 import uuid
 
@@ -232,14 +233,13 @@ class SsmachineConnector(BaseConnector):
         file_name = '{}.jpg'.format(params['filename']) if params['filename'] else '{0}{1}'.format(
             param['url'], '_screenshot.jpg')
 
-        if hasattr(Vault, 'get_vault_tmp_dir'):
+        if not hasattr(Vault, 'get_vault_tmp_dir'):
             temp_dir = Vault.get_vault_tmp_dir()
         else:
             temp_dir = os.path.join(paths.PHANTOM_VAULT, "tmp")
 
-        temp_dir = '{0}{1}'.format(temp_dir, '/{}'.format(uuid.uuid4()))
-        os.makedirs(temp_dir)
-        file_path = os.path.join(temp_dir, 'tempimage.jpg')
+        file_path = tempfile.NamedTemporaryFile(dir=temp_dir, suffix='.jpg', prefix="tmp_", delete=False).name
+
         with open(file_path, 'wb') as f:
             f.write(image)
 
