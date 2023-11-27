@@ -81,7 +81,7 @@
                     "order": 2
                 },
                 "delay": {
-                    "description": "Based on delay value capturing engine should wait before the screenshot is created, (Default: 200)",
+                    "description": "Based on delay value(in seconds) capturing engine should wait before the screenshot is created, (Default: 200)",
                     "data_type": "string",
                     "default": "200",
                     "order": 3
@@ -177,7 +177,7 @@
                     "data_path": "action_result.message",
                     "data_type": "string",
                     "example_values": [
-                        "Downloaded screenshot"
+                        "Screenshot downloaded successfully"
                     ]
                 },
                 {

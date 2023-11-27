@@ -272,11 +272,10 @@ class SsmachineConnector(BaseConnector):
 
     def _get_sspermalink(self, params, method='get'):
         method = method.upper()
-        url = self._rest_url
         # allow the permalink to retrieve from cache
         params.pop('cacheLimit', None)
         try:
-            req = requests.Request(method=method, url=url, params=params)
+            req = requests.Request(method=method, url=self._rest_url, params=params)
             r = req.prepare()
         except Exception as ex:
             self.debug_print(self._get_error_message_from_exception(ex))

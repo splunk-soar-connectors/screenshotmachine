@@ -1,12 +1,12 @@
 [comment]: # " File: README.md"
-[comment]: # "  Copyright (c) 2016-2022 Splunk Inc."
+[comment]: # "  Copyright (c) 2016-2023 Splunk Inc."
 [comment]: # ""
 [comment]: # "  Licensed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt)"
 [comment]: # ""
 
 ## Backward Compatibility
 
-In v3.0.0, For **get screenshot** action, 'size' parameter has been renamed with 'dimension'. Hence, it is requested to the
+In v3.0.0, For **get screenshot** action, 'size' parameter has been renamed with 'dimension' as per the screenshot [API documentation](https://www.screenshotmachine.com/website-screenshot-api.php). Hence, it is requested to the
 end-user to please update their existing playbooks by re-inserting | modifying | deleting the
 corresponding action blocks to ensure the correct functioning of the playbooks created on the
 earlier versions of the app. 
