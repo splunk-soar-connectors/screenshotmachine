@@ -5,18 +5,18 @@
     "publisher": "Splunk",
     "package_name": "phantom_ssmachine",
     "type": "information",
-    "license": "Copyright (c) 2016-2022 Splunk Inc.",
+    "license": "Copyright (c) 2021-2023 Splunk Inc.",
     "main_module": "ssmachine_connector.py",
-    "app_version": "2.2.4",
+    "app_version": "3.0.0",
     "utctime_updated": "2022-01-07T21:17:07.000000Z",
     "product_vendor": "Screenshot Machine",
     "product_name": "Screenshot Machine",
     "product_version_regex": ".*",
-    "min_phantom_version": "5.1.0",
+    "min_phantom_version": "6.1.0",
     "fips_compliant": false,
     "python_version": "3",
     "latest_tested_versions": [
-        "Cloud, API api.screenshotmachine.com, September 29, 2021"
+        "Cloud, API api.screenshotmachine.com, November 20, 2023"
     ],
     "logo": "logo_screenshotmachine.svg",
     "logo_dark": "logo_screenshotmachine_dark.svg",
@@ -33,7 +33,7 @@
             "order": 1
         },
         "cache_limit": {
-            "description": "Cache Limit (how old cached images are accepted (in days), Default: 0)",
+            "description": "Cache Limit (how old cached images are accepted (in days), Default: 0, Allowed range: 0 to 14)",
             "data_type": "numeric",
             "default": 0,
             "order": 2
@@ -53,7 +53,7 @@
         {
             "action": "get screenshot",
             "description": "Get a screenshot of a URL",
-            "verbose": "The supported size types are:<ul><li>Tiny: (120 x 90px)</li><li>Small: (200 x 150px)</li><li>Normal: (400 x 300px)</li><li>Medium: (640 x 480px)</li><li>Large: (800 x 600px)</li><li>Full Page: Complete page from the top to the bottom (can be pretty long)</li></ul><p>Sizes are passed with their full names (e.g. <b>Tiny</b>, or <b>Full Page</b>). The default size is <b>Full Page</b> if no size is defined.",
+            "verbose": "For the <b>dimensions</b> parameter, follow the instructions below<br> <ul> <li>value should be in format [width]x[height]. Default value is 120x90.</li><li>width can be any <b>natural number greater than or equals to 100 and smaller or equals to 1920.</b></li><li>height can be any <b>natural number greater than or equals to 100 and smaller or equals to 9999.</b> Also <b>full</b> value is accepted if you want to capture full length webpage screenshot.</li></ul>Examples:<br>320x240 - website thumbnail size 320x240 pixels<br>800x600 - website snapshot size 800x600 pixels<br>1024x768 - web screenshot size 1024x768 pixels<br>1920x1080 - webpage screenshot size 1920x1080 pixels<br>1024xfull - full page screenshot with width equals to 1024 pixels (can be pretty long).<br><br> For the <b>delay</b> parameter, Use higher values for websites which take more to time load before capturing the screenshot. <br> Allowed values are: (0, 200,400, 600, 800, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000).",
             "type": "investigate",
             "identifier": "get_screenshot",
             "read_only": true,
@@ -69,37 +69,52 @@
                     "required": true,
                     "order": 0
                 },
-                "size": {
-                    "description": "Size of the screenshot",
+                "dimension": {
+                    "description": "Size of the web snapshot or webpage screenshot in format [width]x[height]. (Default: 120x90)",
                     "data_type": "string",
-                    "value_list": [
-                        "Full Page",
-                        "Small",
-                        "Normal",
-                        "Medium",
-                        "Large",
-                        "Tiny"
-                    ],
+                    "default": "120x90",
                     "order": 1
                 },
                 "filename": {
                     "description": "The filename for storing the screenshot in the Vault",
                     "data_type": "string",
                     "order": 2
+                },
+                "delay": {
+                    "description": "Based on delay value(in seconds) capturing engine should wait before the screenshot is created, (Default: 200)",
+                    "data_type": "string",
+                    "default": "200",
+                    "order": 3
                 }
             },
             "output": [
                 {
-                    "data_path": "action_result.parameter.size",
+                    "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
-                        "Full Page",
-                        "Small",
-                        "Normal",
-                        "Medium",
-                        "Large",
-                        "Tiny"
+                        "success",
+                        "failed"
                     ]
+                },
+                {
+                    "data_path": "action_result.parameter.delay",
+                    "data_type": "string",
+                    "example_values": [
+                        "200",
+                        "3000"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.dimension",
+                    "data_type": "string",
+                    "example_values": [
+                        "122x123",
+                        "123xfull"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.filename",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.parameter.url",
@@ -113,27 +128,8 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.parameter.filename",
-                    "data_type": "string"
-                },
-                {
                     "data_path": "action_result.data",
                     "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.status",
-                    "data_type": "string",
-                    "example_values": [
-                        "success",
-                        "failed"
-                    ]
-                },
-                {
-                    "data_path": "action_result.message",
-                    "data_type": "string",
-                    "example_values": [
-                        "Downloaded screenshot"
-                    ]
                 },
                 {
                     "data_path": "action_result.summary.name",
@@ -178,6 +174,13 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Screenshot downloaded successfully"
+                    ]
+                },
+                {
                     "data_path": "summary.total_objects",
                     "data_type": "numeric",
                     "example_values": [
@@ -202,35 +205,15 @@
             "versions": "EQ(*)"
         }
     ],
-    "pip_dependencies": {
+    "pip39_dependencies": {
         "wheel": [
             {
                 "module": "beautifulsoup4",
-                "input_file": "wheels/beautifulsoup4-4.9.1-py3-none-any.whl"
-            },
-            {
-                "module": "certifi",
-                "input_file": "wheels/certifi-2021.10.8-py2.py3-none-any.whl"
-            },
-            {
-                "module": "chardet",
-                "input_file": "wheels/chardet-3.0.4-py2.py3-none-any.whl"
-            },
-            {
-                "module": "idna",
-                "input_file": "wheels/idna-2.10-py2.py3-none-any.whl"
-            },
-            {
-                "module": "requests",
-                "input_file": "wheels/requests-2.25.0-py2.py3-none-any.whl"
+                "input_file": "wheels/py3/beautifulsoup4-4.9.1-py3-none-any.whl"
             },
             {
                 "module": "soupsieve",
-                "input_file": "wheels/soupsieve-2.3-py3-none-any.whl"
-            },
-            {
-                "module": "urllib3",
-                "input_file": "wheels/urllib3-1.26.7-py2.py3-none-any.whl"
+                "input_file": "wheels/py3/soupsieve-2.5-py3-none-any.whl"
             }
         ]
     }
