@@ -11,14 +11,14 @@ Minimum Product Version: 6.1.0
 This app integrates with the Screenshot Machine service
 
 [comment]: # " File: README.md"
-[comment]: # "  Copyright (c) 2016-2022 Splunk Inc."
+[comment]: # "  Copyright (c) 2016-2023 Splunk Inc."
 [comment]: # ""
 [comment]: # "  Licensed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt)"
 [comment]: # ""
 
 ## Backward Compatibility
 
-In v3.0.0, For **get screenshot** action, 'size' parameter has been renamed with 'dimension'. Hence, it is requested to the
+In v3.0.0, For **get screenshot** action, 'size' parameter has been renamed with 'dimension' as per the screenshot [API documentation](https://www.screenshotmachine.com/website-screenshot-api.php). Hence, it is requested to the
 end-user to please update their existing playbooks by re-inserting | modifying | deleting the
 corresponding action blocks to ensure the correct functioning of the playbooks created on the
 earlier versions of the app. 
@@ -81,7 +81,7 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 **url** |  required  | URL to screenshot | string |  `url`  `domain` 
 **dimension** |  optional  | Size of the web snapshot or webpage screenshot in format [width]x[height]. (Default: 120x90) | string | 
 **filename** |  optional  | The filename for storing the screenshot in the Vault | string | 
-**delay** |  optional  | Based on delay value capturing engine should wait before the screenshot is created, (Default: 200) | string | 
+**delay** |  optional  | Based on delay value(in seconds) capturing engine should wait before the screenshot is created, (Default: 200) | string | 
 
 #### Action Output
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
@@ -97,6 +97,6 @@ action_result.summary.permalink | string |  `url`  |
 action_result.summary.size | numeric |  |   48692 
 action_result.summary.vault_file_path | string |  |   /opt/phantom/vault/02/5a/025a0aed68c79a9dc14fa11654ed9a21d521f79e 
 action_result.summary.vault_id | string |  `vault id`  `sha1`  |   025a0aed68c79a9dc14fa11654ed9a21d521f79e 
-action_result.message | string |  |   Downloaded screenshot 
+action_result.message | string |  |   Screenshot downloaded successfully 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1 
