@@ -1,6 +1,6 @@
 # File: ssmachine_connector.py
 #
-# Copyright (c) 2016-2022 Splunk Inc.
+# Copyright (c) 2016-2023 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@
 import hashlib
 # Imports local to this App
 import os
+import tempfile
 import urllib.parse
-import uuid
 
 import phantom.app as phantom
 import phantom.rules as ph_rules
@@ -28,6 +28,7 @@ from bs4 import BeautifulSoup
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 from phantom.vault import Vault as Vault
+from phantom_common import paths
 
 from ssmachine_consts import *
 
@@ -44,6 +45,10 @@ class SsmachineConnector(BaseConnector):
         # Call the BaseConnectors init first
         super(SsmachineConnector, self).__init__()
         self._headers = None
+        self._api_key = None
+        self._api_phrase = None
+        self._rest_url = None
+        self.cache_limit = None
 
     def initialize(self):
 
@@ -51,7 +56,7 @@ class SsmachineConnector(BaseConnector):
 
         self._api_key = config.get('ssmachine_key')
         self._api_phrase = config.get('ssmachine_hash')
-        self._rest_url = '{0}'.format(SSMACHINE_JSON_DOMAIN)
+        self._rest_url = SSMACHINE_JSON_DOMAIN
         cache_limit = config.get('cache_limit', DEFAULT_CACHE_LIMIT)
         try:
             if DEFAULT_CACHE_LIMIT <= float(cache_limit) <= MAX_CACHE_LIMIT:
@@ -69,35 +74,38 @@ class SsmachineConnector(BaseConnector):
         :return: error message
         """
 
+        error_code = None
+        error_msg = SSMACHINE_UNAVAILABLE_MSG_ERROR
+        self.error_print("Exception Occurred.", dump_object=e)
         try:
             if e.args:
                 if len(e.args) > 1:
                     error_code = e.args[0]
                     error_msg = e.args[1]
                 elif len(e.args) == 1:
-                    error_code = ERR_CODE_MSG
+                    error_code = ERROR_CODE_MSG
                     error_msg = e.args[0]
             else:
-                error_code = ERR_CODE_MSG
-                error_msg = ERR_MSG_UNAVAILABLE
+                error_code = ERROR_CODE_MSG
+                error_msg = ERROR_MSG_UNAVAILABLE
         except:
-            error_code = ERR_CODE_MSG
-            error_msg = ERR_MSG_UNAVAILABLE
+            error_code = ERROR_CODE_MSG
+            error_msg = ERROR_MSG_UNAVAILABLE
 
         try:
-            if error_code in ERR_CODE_MSG:
+            if not error_code:
                 error_text = 'Error Message: {0}'.format(error_msg)
             else:
                 error_text = 'Error Code: {0}. Error Message: {1}'.format(error_code, error_msg)
         except:
-            self.debug_print(PARSE_ERR_MSG)
-            error_text = PARSE_ERR_MSG
+            self.debug_print(PARSE_ERROR_MSG)
+            error_text = PARSE_ERROR_MSG
 
         return error_text
 
     def _process_html_response(self, response, action_result):
 
-        # An html response, is bound to be an error
+        # A html response, is bound to be an error
         status_code = response.status_code
 
         try:
@@ -154,15 +162,14 @@ class SsmachineConnector(BaseConnector):
         # Things look fine
         return RetVal(phantom.APP_SUCCESS, r.content)
 
-    def _make_rest_call(self, endpoint, result, params={}, headers=None, json=None, method='get', stream=False):
+    def _make_rest_call(self, result, params=None, headers=None, json=None, method='get', stream=False):
 
-        url = '{0}{1}'.format(self._rest_url, endpoint)
+        url = self._rest_url
+        params['key'] = self._api_key
+        params['cacheLimit'] = self.cache_limit
 
         if headers is None:
             headers = {}
-
-        if self._headers is not None:
-            (headers.update(self._headers))
 
         try:
             request_func = getattr(requests, method)
@@ -179,33 +186,20 @@ class SsmachineConnector(BaseConnector):
             error_msg = 'REST API call to server failed. {}'.format(err)
             return result.set_status(phantom.APP_ERROR, error_msg), None
 
-        ret_val, resp_data = self._parse_response(result, r)
-
-        # Any http or parsing error is handled by the _parse_response function
-        if phantom.is_fail(ret_val):
-            return (result.get_status(), resp_data)
-
-        return (phantom.APP_SUCCESS, resp_data)
+        return self._parse_response(result, r)
 
     def _test_connectivity(self, param):
 
         action_result = ActionResult(dict(param))
         self.add_action_result(action_result)
 
-        params = dict()
-        params['url'] = 'https://www.screenshotmachine.com'
+        params = {'url': 'https://www.screenshotmachine.com'}
+        # Check if we have a Secret Phrase
+        params['hash'] = str(hashlib.md5(
+            f"{params['url']}{self._api_phrase}".encode('utf-8')).hexdigest()) if self._api_phrase else ''
         self.save_progress('Checking to see if Screenshotmachine.com is online...')
 
-        params['key'] = self._api_key
-
-        # Check if we have a Secret Phrase
-        if self._api_phrase is None:
-            params['hash'] = ''
-        else:
-            params['hash'] = str(hashlib.md5((params['url'] + self._api_phrase).encode('utf-8')).hexdigest())
-
-        params['cacheLimit'] = self.cache_limit
-        ret_val, resp_data = self._make_rest_call('', action_result, params, method='post', stream=True)
+        ret_val, resp_data = self._make_rest_call(action_result, params, method='post', stream=True)
 
         if phantom.is_fail(ret_val):
             action_result.append_to_message('Test connectivity failed')
@@ -214,117 +208,78 @@ class SsmachineConnector(BaseConnector):
         self.save_progress('Test Connectivity Passed')
         return action_result.set_status(ret_val, 'Test Connectivity Passed')
 
-    def _handle_post_url(self, param):
+    def _handle_get_screenshot(self, param):
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        params = {
+            'url': param['url'],
+            'filename': param.get('filename'),
+            'dimension': param.get('dimension', SSMACHINE_DEFAULT_DIMENSION),
+            'format': 'JPG',
+            'delay': param.get('delay', SSMACHINE_DEFAULT_DELAY),
+            'hash': str(hashlib.md5(f"{param['url']}{self._api_phrase}".encode('utf-8')).hexdigest())
+            if self._api_phrase else ''  # Check if we have a Secret Phrase
+        }
 
-        action_result = ActionResult(dict(param))
-        self.add_action_result(action_result)
-
-        params = dict()
-        params['url'] = param['url']
-        params['filename'] = param.get('filename')
-        params['key'] = self._api_key
-
-        # Check if we have a size
-        sizes = {'tiny': 'T', 'small': 'S', 'normal': 'N', 'medium': 'M', 'large': 'L', 'full page': 'F'}
-        test = param.get('size')
-        if not test:
-            self.save_progress('Size was blank, using the default "full page" size')
-            test = 'full page'
-        if not sizes.get(test.lower()):
-            self.save_progress('Given size not found, using the default "full page" size')
-            params['size'] = 'F'
-        else:
-            params['size'] = sizes[test.lower()]
-
-        # Check if we have a Secret Phrase
-        if self._api_phrase is None:
-            params['hash'] = ''
-        else:
-            params['hash'] = str(hashlib.md5((params['url'] + self._api_phrase).encode('utf-8')).hexdigest())
-
-        params['cacheLimit'] = self.cache_limit
-        params['format'] = 'JPG'
-        params['timeout'] = '200'
-
-        ret_val, image = self._make_rest_call('', action_result, params, method='post', stream=True)
+        ret_val, image = self._make_rest_call(action_result, params, method='post', stream=True)
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         permalink = None
         # only create a permalink if the hash is used
         if params['hash']:
-            permalink = self._get_sspermalink('', params=params, method='post')
+            permalink = self._get_sspermalink(params=params, method='post')
 
-        if params['filename']:
-            file_name = '{}.jpg'.format(params['filename'])
+        file_name = '{}.jpg'.format(params['filename']) if params['filename'] else '{0}{1}'.format(
+            param['url'], '_screenshot.jpg')
+
+        if not hasattr(Vault, 'get_vault_tmp_dir'):
+            temp_dir = Vault.get_vault_tmp_dir()
         else:
-            file_name = '{0}{1}'.format(param['url'], '_screenshot.jpg')
+            temp_dir = os.path.join(paths.PHANTOM_VAULT, "tmp")
 
-        is_download = False
-        if hasattr(Vault, 'create_attachment'):
-            vault_ret = Vault.create_attachment(image, self.get_container_id(), file_name=file_name)
+        file_path = tempfile.NamedTemporaryFile(dir=temp_dir, suffix='.jpg', prefix="tmp_", delete=False).name
 
-            if vault_ret.get('succeeded'):
-                action_result.set_status(phantom.APP_SUCCESS, 'Downloaded screenshot')
-                _, _, vault_meta_info = ph_rules.vault_info(container_id=self.get_container_id(), vault_id=vault_ret[phantom.APP_JSON_HASH])
-                if not vault_meta_info:
-                    self.debug_print('Error while fetching meta information for vault ID: {}'.format(vault_ret[phantom.APP_JSON_HASH]))
-                    return action_result.set_status(phantom.APP_ERROR, "Could not find meta information of the downloaded screenshot's Vault")
+        with open(file_path, 'wb') as f:
+            f.write(image)
 
-                vault_path = list(vault_meta_info)[0]['path']
-                summary = {
-                        phantom.APP_JSON_VAULT_ID: vault_ret[phantom.APP_JSON_HASH],
-                        phantom.APP_JSON_NAME: file_name,
-                        'vault_file_path': vault_path,
-                        phantom.APP_JSON_SIZE: vault_ret.get(phantom.APP_JSON_SIZE)}
-                if permalink:
-                    summary['permalink'] = permalink
-                action_result.update_summary(summary)
-                is_download = True
-            else:
-                is_download = False
-        if not is_download:
-            if hasattr(Vault, 'get_vault_tmp_dir'):
-                temp_dir = Vault.get_vault_tmp_dir()
-            else:
-                temp_dir = '/opt/phantom/vault/tmp'
-            temp_dir = '{0}{1}'.format(temp_dir, '/{}'.format(uuid.uuid4()))
-            os.makedirs(temp_dir)
-            file_path = os.path.join(temp_dir, 'tempimage.jpg')
+        success, msg, vault_id = ph_rules.vault_add(
+            container=self.get_container_id(),
+            file_location=file_path,
+            file_name=file_name,
+        )
 
-            with open(file_path, 'wb') as f:
-                f.write(image)
+        if not success:
+            return action_result.set_status(phantom.APP_ERROR, "Error adding file to the vault, Error: {}".format(msg))
 
-            success, message, vault_id = ph_rules.vault_add(container=self.get_container_id(), file_location=file_path, file_name=file_name)
+        _, _, vault_meta_info = ph_rules.vault_info(container_id=self.get_container_id(), vault_id=vault_id)
+        if not vault_meta_info:
+            self.debug_print('Error while fetching meta information for vault ID: {}'.format(vault_id))
+            return action_result.set_status(phantom.APP_ERROR, "Could not find meta information of "
+                                                               "the downloaded screenshot's Vault")
 
-            if success:
-                action_result.set_status(phantom.APP_SUCCESS, 'Downloaded screenshot')
-                _, _, vault_meta_info = ph_rules.vault_info(container_id=self.get_container_id(), vault_id=vault_id)
-                if not vault_meta_info:
-                    self.debug_print('Error while fetching meta information for vault ID: {}'.format(vault_id))
-                    return action_result.set_status(phantom.APP_ERROR, "Could not find meta information of the downloaded screenshot's Vault")
+        summary = {
+            phantom.APP_JSON_VAULT_ID: vault_id,
+            phantom.APP_JSON_NAME: file_name,
+            'vault_file_path': vault_meta_info[0]['path'],
+            phantom.APP_JSON_SIZE: vault_meta_info[0][phantom.APP_JSON_SIZE]
+        }
+        if permalink:
+            summary['permalink'] = permalink
+        action_result.update_summary(summary)
+        self.debug_print("Successfully added file to the vault")
 
-                vault_path = list(vault_meta_info)[0]['path']
-                summary = {
-                        phantom.APP_JSON_VAULT_ID: vault_id,
-                        phantom.APP_JSON_NAME: file_name,
-                        'vault_file_path': vault_path}
+        return action_result.set_status(phantom.APP_SUCCESS, "Screenshot downloaded successfully")
 
-                if permalink:
-                    summary['permalink'] = permalink
-                action_result.update_summary(summary)
-            else:
-                return action_result.set_status(phantom.APP_ERROR, 'Error occurred while saving file to vault: {}'.format(message))
-
-        return action_result.get_status()
-
-    def _get_sspermalink(self, endpoint, params, method='get'):
+    def _get_sspermalink(self, params, method='get'):
         method = method.upper()
-        url = '{0}{1}'.format(self._rest_url, endpoint)
         # allow the permalink to retrieve from cache
         params.pop('cacheLimit', None)
-        req = requests.Request(method=method, url=url, params=params)
-        r = req.prepare()
+        try:
+            req = requests.Request(method=method, url=self._rest_url, params=params)
+            r = req.prepare()
+        except Exception as ex:
+            self.debug_print(self._get_error_message_from_exception(ex))
+            return None
         try:
             return urllib.parse.unquote(r.url)
         except:
@@ -340,7 +295,7 @@ class SsmachineConnector(BaseConnector):
         self.debug_print('action_id', self.get_action_identifier())
 
         if action_id == 'get_screenshot':
-            ret_val = self._handle_post_url(param)
+            ret_val = self._handle_get_screenshot(param)
         elif action_id == phantom.ACTION_ID_TEST_ASSET_CONNECTIVITY:
             ret_val = self._test_connectivity(param)
 
