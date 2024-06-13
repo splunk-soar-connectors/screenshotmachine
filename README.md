@@ -6,12 +6,12 @@ Connector Version: 3.0.0
 Product Vendor: Screenshot Machine  
 Product Name: Screenshot Machine  
 Product Version Supported (regex): ".\*"  
-Minimum Product Version: 6.1.0  
+Minimum Product Version: 6.2.1  
 
 This app integrates with the Screenshot Machine service
 
 [comment]: # " File: README.md"
-[comment]: # "  Copyright (c) 2016-2023 Splunk Inc."
+[comment]: # "  Copyright (c) 2016-2024 Splunk Inc."
 [comment]: # ""
 [comment]: # "  Licensed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt)"
 [comment]: # ""
@@ -95,6 +95,7 @@ action_result.data | string |  |
 action_result.summary.name | string |  `url`  |   https://www.testurl.com_screenshot.jpg 
 action_result.summary.permalink | string |  `url`  |  
 action_result.summary.size | numeric |  |   48692 
+action_result.summary.vault_file_id | numeric |  |   123 
 action_result.summary.vault_file_path | string |  |   /opt/phantom/vault/02/5a/025a0aed68c79a9dc14fa11654ed9a21d521f79e 
 action_result.summary.vault_id | string |  `vault id`  `sha1`  |   025a0aed68c79a9dc14fa11654ed9a21d521f79e 
 action_result.message | string |  |   Screenshot downloaded successfully 
