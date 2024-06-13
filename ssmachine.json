@@ -5,14 +5,14 @@
     "publisher": "Splunk",
     "package_name": "phantom_ssmachine",
     "type": "information",
-    "license": "Copyright (c) 2016-2023 Splunk Inc.",
+    "license": "Copyright (c) 2016-2024 Splunk Inc.",
     "main_module": "ssmachine_connector.py",
     "app_version": "3.0.0",
     "utctime_updated": "2022-01-07T21:17:07.000000Z",
     "product_vendor": "Screenshot Machine",
     "product_name": "Screenshot Machine",
     "product_version_regex": ".*",
-    "min_phantom_version": "6.1.0",
+    "min_phantom_version": "6.2.1",
     "fips_compliant": false,
     "python_version": "3",
     "latest_tested_versions": [
@@ -153,6 +153,13 @@
                     "data_type": "numeric",
                     "example_values": [
                         48692
+                    ]
+                },
+                {
+                    "data_path": "action_result.summary.vault_file_id",
+                    "data_type": "numeric",
+                    "example_values": [
+                        123
                     ]
                 },
                 {
