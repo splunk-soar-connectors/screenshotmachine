@@ -1,6 +1,6 @@
 # File: ssmachine_view.py
 #
-# Copyright (c) 2016-2023 Splunk Inc.
+# Copyright (c) 2016-2024 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ def get_ctx_result(result):
 
     ctx_result['vault_id'] = summary.get('vault_id')
     ctx_result['vault_file_name'] = summary.get('name')
+    ctx_result['vault_file_id'] = summary.get('vault_file_id')
     ctx_result['vault_file_path'] = summary.get('vault_file_path')
 
     try:
