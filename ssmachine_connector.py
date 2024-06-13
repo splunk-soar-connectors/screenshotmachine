@@ -1,6 +1,6 @@
 # File: ssmachine_connector.py
 #
-# Copyright (c) 2016-2023 Splunk Inc.
+# Copyright (c) 2016-2024 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -261,6 +261,7 @@ class SsmachineConnector(BaseConnector):
             phantom.APP_JSON_VAULT_ID: vault_id,
             phantom.APP_JSON_NAME: file_name,
             'vault_file_path': vault_meta_info[0]['path'],
+            'vault_file_id': vault_meta_info[0]['id'],
             phantom.APP_JSON_SIZE: vault_meta_info[0][phantom.APP_JSON_SIZE]
         }
         if permalink:
