@@ -7,14 +7,17 @@
     "type": "information",
     "license": "Copyright (c) 2016-2025 Splunk Inc.",
     "main_module": "ssmachine_connector.py",
-    "app_version": "3.0.2",
-    "utctime_updated": "2025-04-14T21:01:07.136814Z",
+    "app_version": "3.0.3",
+    "utctime_updated": "2025-07-30T17:52:56.565461Z",
     "product_vendor": "Screenshot Machine",
     "product_name": "Screenshot Machine",
     "product_version_regex": ".*",
     "min_phantom_version": "6.2.1",
     "fips_compliant": false,
-    "python_version": ["3.9", "3.13"],
+    "python_version": [
+        "3.9",
+        "3.13"
+    ],
     "latest_tested_versions": [
         "Cloud, API api.screenshotmachine.com, November 20, 2023"
     ],
