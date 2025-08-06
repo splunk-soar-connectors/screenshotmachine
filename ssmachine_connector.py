@@ -18,7 +18,6 @@
 import hashlib
 
 # Imports local to this App
-import os
 import tempfile
 import urllib.parse
 
@@ -29,7 +28,6 @@ from bs4 import BeautifulSoup
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 from phantom.vault import Vault as Vault
-from phantom_common import paths
 
 from ssmachine_consts import *
 
@@ -228,11 +226,7 @@ class SsmachineConnector(BaseConnector):
 
         file_name = "{}.jpg".format(params["filename"]) if params["filename"] else "{}{}".format(param["url"], "_screenshot.jpg")
 
-        if not hasattr(Vault, "get_vault_tmp_dir"):
-            temp_dir = Vault.get_vault_tmp_dir()
-        else:
-            temp_dir = os.path.join(paths.PHANTOM_VAULT, "tmp")
-
+        temp_dir = Vault.get_vault_tmp_dir()
         file_path = tempfile.NamedTemporaryFile(dir=temp_dir, suffix=".jpg", prefix="tmp_", delete=False).name
 
         with open(file_path, "wb") as f:
