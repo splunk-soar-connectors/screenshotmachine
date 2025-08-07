@@ -1,1 +1,2 @@
 **Unreleased**
+* Fix to always get vault temporary directory using Vault APIs
