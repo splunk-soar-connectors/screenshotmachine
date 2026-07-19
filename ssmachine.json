@@ -5,7 +5,7 @@
     "publisher": "Splunk",
     "package_name": "phantom_ssmachine",
     "type": "information",
-    "license": "Copyright (c) 2016-2025 Splunk Inc.",
+    "license": "Copyright (c) 2016-2026 Splunk Inc.",
     "main_module": "ssmachine_connector.py",
     "app_version": "3.0.5",
     "utctime_updated": "2025-08-07T17:11:03.971271Z",
@@ -211,5 +211,11 @@
             },
             "versions": "EQ(*)"
         }
-    ]
+    ],
+    "pip313_dependencies": {
+        "wheel": []
+    },
+    "pip39_dependencies": {
+        "wheel": []
+    }
 }

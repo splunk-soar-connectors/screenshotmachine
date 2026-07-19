@@ -1,6 +1,6 @@
 # File: ssmachine_connector.py
 #
-# Copyright (c) 2016-2025 Splunk Inc.
+# Copyright (c) 2016-2026 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -193,7 +193,7 @@ class SsmachineConnector(BaseConnector):
         params["hash"] = str(hashlib.md5(f"{params['url']}{self._api_phrase}".encode()).hexdigest()) if self._api_phrase else ""
         self.save_progress("Checking to see if Screenshotmachine.com is online...")
 
-        ret_val, resp_data = self._make_rest_call(action_result, params, method="post", stream=True)
+        ret_val, _resp_data = self._make_rest_call(action_result, params, method="post", stream=True)
 
         if phantom.is_fail(ret_val):
             action_result.append_to_message("Test connectivity failed")
