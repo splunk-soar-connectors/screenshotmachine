@@ -69,35 +69,10 @@ class SsmachineConnector(BaseConnector):
         :param e: Exception object
         :return: error message
         """
-
-        error_code = None
-        error_msg = SSMACHINE_UNAVAILABLE_MSG_ERROR
-        self.error_print("Exception Occurred.", dump_object=e)
-        try:
-            if e.args:
-                if len(e.args) > 1:
-                    error_code = e.args[0]
-                    error_msg = e.args[1]
-                elif len(e.args) == 1:
-                    error_code = ERROR_CODE_MSG
-                    error_msg = e.args[0]
-            else:
-                error_code = ERROR_CODE_MSG
-                error_msg = ERROR_MSG_UNAVAILABLE
-        except:
-            error_code = ERROR_CODE_MSG
-            error_msg = ERROR_MSG_UNAVAILABLE
-
-        try:
-            if not error_code:
-                error_text = f"Error Message: {error_msg}"
-            else:
-                error_text = f"Error Code: {error_code}. Error Message: {error_msg}"
-        except:
-            self.debug_print(PARSE_ERROR_MSG)
-            error_text = PARSE_ERROR_MSG
-
-        return error_text
+        # Request exceptions may include the API key because this API accepts it in
+        # the request query string.  Do not log or return their raw text.
+        self.debug_print(f"Screenshot Machine request failed: {type(e).__name__}")
+        return SSMACHINE_UNAVAILABLE_MSG_ERROR
 
     def _process_html_response(self, response, action_result):
         # A html response, is bound to be an error

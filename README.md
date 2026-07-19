@@ -4,7 +4,7 @@ Publisher: Splunk <br>
 Connector Version: 3.0.5 <br>
 Product Vendor: Screenshot Machine <br>
 Product Name: Screenshot Machine <br>
-Minimum Product Version: 6.2.1
+Minimum Product Version: 6.3.0
 
 This app integrates with the Screenshot Machine service
 

@@ -12,7 +12,7 @@
     "product_vendor": "Screenshot Machine",
     "product_name": "Screenshot Machine",
     "product_version_regex": ".*",
-    "min_phantom_version": "6.2.1",
+    "min_phantom_version": "6.3.0",
     "fips_compliant": false,
     "python_version": "3.9, 3.13",
     "latest_tested_versions": [
