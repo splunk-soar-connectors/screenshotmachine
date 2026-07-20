@@ -1,2 +1,4 @@
 **Unreleased**
+
+* Prevented API key exposure in transport-failure messages.
 * Remove beautifulsoup4 from requirements.txt

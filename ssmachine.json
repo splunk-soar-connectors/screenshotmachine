@@ -5,14 +5,14 @@
     "publisher": "Splunk",
     "package_name": "phantom_ssmachine",
     "type": "information",
-    "license": "Copyright (c) 2016-2025 Splunk Inc.",
+    "license": "Copyright (c) 2016-2026 Splunk Inc.",
     "main_module": "ssmachine_connector.py",
     "app_version": "3.0.5",
     "utctime_updated": "2025-08-07T17:11:03.971271Z",
     "product_vendor": "Screenshot Machine",
     "product_name": "Screenshot Machine",
     "product_version_regex": ".*",
-    "min_phantom_version": "6.2.1",
+    "min_phantom_version": "6.3.0",
     "fips_compliant": false,
     "python_version": "3.9, 3.13",
     "latest_tested_versions": [
@@ -211,5 +211,11 @@
             },
             "versions": "EQ(*)"
         }
-    ]
+    ],
+    "pip313_dependencies": {
+        "wheel": []
+    },
+    "pip39_dependencies": {
+        "wheel": []
+    }
 }

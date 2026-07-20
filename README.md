@@ -1,10 +1,10 @@
 # Screenshot Machine
 
-Publisher: Splunk \
-Connector Version: 3.0.5 \
-Product Vendor: Screenshot Machine \
-Product Name: Screenshot Machine \
-Minimum Product Version: 6.2.1
+Publisher: Splunk <br>
+Connector Version: 3.0.5 <br>
+Product Vendor: Screenshot Machine <br>
+Product Name: Screenshot Machine <br>
+Minimum Product Version: 6.3.0
 
 This app integrates with the Screenshot Machine service
 
@@ -45,14 +45,14 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 
 ### Supported Actions
 
-[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration \
+[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration <br>
 [get screenshot](#action-get-screenshot) - Get a screenshot of a URL
 
 ## action: 'test connectivity'
 
 Validate the asset configuration for connectivity using supplied configuration
 
-Type: **test** \
+Type: **test** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -67,7 +67,7 @@ No Output
 
 Get a screenshot of a URL
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 For the <b>dimensions</b> parameter, follow the instructions below<br> <ul> <li>value should be in format [width]x[height]. Default value is 120x90.</li><li>width can be any <b>natural number greater than or equals to 100 and smaller or equals to 1920.</b></li><li>height can be any <b>natural number greater than or equals to 100 and smaller or equals to 9999.</b> Also <b>full</b> value is accepted if you want to capture full length webpage screenshot.</li></ul>Examples:<br>320x240 - website thumbnail size 320x240 pixels<br>800x600 - website snapshot size 800x600 pixels<br>1024x768 - web screenshot size 1024x768 pixels<br>1920x1080 - webpage screenshot size 1920x1080 pixels<br>1024xfull - full page screenshot with width equals to 1024 pixels (can be pretty long).<br><br> For the <b>delay</b> parameter, Use higher values for websites which take more to time load before capturing the screenshot. <br> Allowed values are: (0, 200,400, 600, 800, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000).
@@ -105,7 +105,7 @@ ______________________________________________________________________
 
 Auto-generated Splunk SOAR Connector documentation.
 
-Copyright 2025 Splunk Inc.
+Copyright 2026 Splunk Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
