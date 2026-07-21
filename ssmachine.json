@@ -37,6 +37,12 @@
             "data_type": "numeric",
             "default": 0,
             "order": 2
+        },
+        "max_screenshot_size_mb": {
+            "description": "Maximum screenshot download size in MiB",
+            "data_type": "numeric",
+            "default": 25,
+            "order": 3
         }
     },
     "actions": [

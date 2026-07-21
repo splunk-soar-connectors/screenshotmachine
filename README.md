@@ -55,6 +55,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 **ssmachine_key** | required | password | API Key |
 **ssmachine_hash** | optional | password | API Secret Phrase |
 **cache_limit** | optional | numeric | Cache Limit (how old cached images are accepted (in days), Default: 0, Allowed range: 0 to 14) |
+**max_screenshot_size_mb** | optional | numeric | Maximum screenshot download size in MiB |
 
 ### Supported Actions
 
