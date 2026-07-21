@@ -27,3 +27,7 @@ PARSE_ERROR_MSG = "Unable to parse the error message. Please check the asset con
 SSMACHINE_UNAVAILABLE_MSG_ERROR = "Error message unavailable. Please check the asset configuration and|or action parameters"
 SSMACHINE_CUSTOM_HTTP_RESPONSE_HEADER = "X-Screenshotmachine-Response"
 DEFAULT_REQUEST_TIMEOUT = 60  # in seconds
+DEFAULT_MAX_SCREENSHOT_SIZE_MB = 25
+DOWNLOAD_CHUNK_SIZE = 1024 * 1024
+VALID_MAX_SCREENSHOT_SIZE_MSG = "Please provide a positive value for the 'Maximum Screenshot Size' configuration parameter"
+SCREENSHOT_TOO_LARGE_MSG = "Screenshot exceeds the configured maximum screenshot size"

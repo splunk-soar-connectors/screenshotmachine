@@ -16,6 +16,7 @@
 #
 # Phantom App imports
 import hashlib
+import os
 
 # Imports local to this App
 import tempfile
@@ -46,6 +47,7 @@ class SsmachineConnector(BaseConnector):
         self._api_phrase = None
         self._rest_url = None
         self.cache_limit = None
+        self._max_screenshot_size_bytes = None
 
     def initialize(self):
         config = self.get_config()
@@ -61,6 +63,15 @@ class SsmachineConnector(BaseConnector):
                 return self.set_status(phantom.APP_ERROR, VALID_CACHE_LIMIT_MSG)
         except:
             return self.set_status(phantom.APP_ERROR, VALID_CACHE_LIMIT_MSG)
+
+        max_screenshot_size_mb = config.get("max_screenshot_size_mb", DEFAULT_MAX_SCREENSHOT_SIZE_MB)
+        try:
+            max_screenshot_size_mb = float(max_screenshot_size_mb)
+            if max_screenshot_size_mb <= 0:
+                raise ValueError
+            self._max_screenshot_size_bytes = int(max_screenshot_size_mb * 1024 * 1024)
+        except (TypeError, ValueError):
+            return self.set_status(phantom.APP_ERROR, VALID_MAX_SCREENSHOT_SIZE_MSG)
 
         return phantom.APP_SUCCESS
 
@@ -151,13 +162,78 @@ class SsmachineConnector(BaseConnector):
             return result.set_status(phantom.APP_ERROR, f"Invalid method call: {method} for requests module"), None
 
         try:
-            r = request_func(url, headers=headers, params=params, json=json, stream=stream, verify=True)
+            r = request_func(
+                url,
+                headers=headers,
+                params=params,
+                json=json,
+                stream=stream,
+                verify=True,
+                timeout=DEFAULT_REQUEST_TIMEOUT,
+            )
         except Exception as e:
             err = self._get_error_message_from_exception(e)
             error_msg = f"REST API call to server failed. {err}"
             return result.set_status(phantom.APP_ERROR, error_msg), None
 
         return self._parse_response(result, r)
+
+    def _download_screenshot(self, action_result, params):
+        params["key"] = self._api_key
+        params["cacheLimit"] = self.cache_limit
+
+        file_path = None
+        keep_file = False
+        try:
+            with requests.post(
+                self._rest_url,
+                params=params,
+                stream=True,
+                verify=True,
+                timeout=DEFAULT_REQUEST_TIMEOUT,
+            ) as response:
+                if not (200 <= response.status_code < 300):
+                    return action_result.set_status(
+                        phantom.APP_ERROR,
+                        f"Screenshot Machine returned HTTP status {response.status_code}",
+                    ), None
+
+                if "image" not in response.headers.get("Content-Type", "").lower():
+                    return action_result.set_status(
+                        phantom.APP_ERROR,
+                        "Screenshot Machine response does not contain an image",
+                    ), None
+
+                content_length = response.headers.get("Content-Length")
+                if content_length:
+                    try:
+                        if int(content_length) > self._max_screenshot_size_bytes:
+                            return action_result.set_status(phantom.APP_ERROR, SCREENSHOT_TOO_LARGE_MSG), None
+                    except ValueError:
+                        self.debug_print("Screenshot Machine returned an invalid Content-Length header")
+
+                temp_dir = Vault.get_vault_tmp_dir()
+                with tempfile.NamedTemporaryFile(dir=temp_dir, suffix=".jpg", prefix="tmp_", delete=False) as screenshot_file:
+                    file_path = screenshot_file.name
+                    downloaded_bytes = 0
+                    for chunk in response.iter_content(chunk_size=DOWNLOAD_CHUNK_SIZE):
+                        if not chunk:
+                            continue
+                        downloaded_bytes += len(chunk)
+                        if downloaded_bytes > self._max_screenshot_size_bytes:
+                            return action_result.set_status(phantom.APP_ERROR, SCREENSHOT_TOO_LARGE_MSG), None
+                        screenshot_file.write(chunk)
+            keep_file = True
+            return phantom.APP_SUCCESS, file_path
+        except Exception as e:
+            err = self._get_error_message_from_exception(e)
+            return action_result.set_status(phantom.APP_ERROR, f"REST API call to server failed. {err}"), None
+        finally:
+            if file_path and not keep_file:
+                try:
+                    os.unlink(file_path)
+                except OSError:
+                    pass
 
     def _test_connectivity(self, param):
         action_result = ActionResult(dict(param))
@@ -190,7 +266,7 @@ class SsmachineConnector(BaseConnector):
             else "",  # Check if we have a Secret Phrase
         }
 
-        ret_val, image = self._make_rest_call(action_result, params, method="post", stream=True)
+        ret_val, file_path = self._download_screenshot(action_result, params)
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
@@ -201,17 +277,17 @@ class SsmachineConnector(BaseConnector):
 
         file_name = "{}.jpg".format(params["filename"]) if params["filename"] else "{}{}".format(param["url"], "_screenshot.jpg")
 
-        temp_dir = Vault.get_vault_tmp_dir()
-        file_path = tempfile.NamedTemporaryFile(dir=temp_dir, suffix=".jpg", prefix="tmp_", delete=False).name
-
-        with open(file_path, "wb") as f:
-            f.write(image)
-
-        success, msg, vault_id = ph_rules.vault_add(
-            container=self.get_container_id(),
-            file_location=file_path,
-            file_name=file_name,
-        )
+        try:
+            success, msg, vault_id = ph_rules.vault_add(
+                container=self.get_container_id(),
+                file_location=file_path,
+                file_name=file_name,
+            )
+        finally:
+            try:
+                os.unlink(file_path)
+            except OSError:
+                pass
 
         if not success:
             return action_result.set_status(phantom.APP_ERROR, f"Error adding file to the vault, Error: {msg}")

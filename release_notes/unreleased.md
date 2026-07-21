@@ -1,3 +1,3 @@
 **Unreleased**
 
-* Document Screenshot Machine's vendor-required query-parameter API-key transport and the available secret-phrase safeguard.
+* Limit screenshot downloads to a configurable maximum size of 25 MiB by default and stream accepted images to the Vault staging directory.
