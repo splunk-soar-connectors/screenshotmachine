@@ -172,6 +172,8 @@ class SsmachineConnector(BaseConnector):
                 verify=True,
                 timeout=DEFAULT_REQUEST_TIMEOUT,
             )
+        except requests.Timeout:
+            return result.set_status(phantom.APP_ERROR, SSMACHINE_REQUEST_TIMEOUT_MSG), None
         except Exception as e:
             err = self._get_error_message_from_exception(e)
             error_msg = f"REST API call to server failed. {err}"
@@ -227,6 +229,8 @@ class SsmachineConnector(BaseConnector):
                         screenshot_file.write(chunk)
             keep_file = True
             return phantom.APP_SUCCESS, file_path
+        except requests.Timeout:
+            return action_result.set_status(phantom.APP_ERROR, SSMACHINE_REQUEST_TIMEOUT_MSG), None
         except Exception as e:
             err = self._get_error_message_from_exception(e)
             return action_result.set_status(phantom.APP_ERROR, f"REST API call to server failed. {err}"), None

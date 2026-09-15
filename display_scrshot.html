@@ -95,33 +95,33 @@
             </td>
             <td>{{ result.vault_file_name }}</td>
           </tr>
-        {% endif %}
-        {% if result.vault_id %}
-          <tr>
-            <td>
-              <b>Vault ID</b>
-            </td>
-            <td>
-              <a href="javascript:;"
-                 onclick="context_menu(this, [{'contains': ['sha1', 'vault id'], 'value': '{{ result.vault_id }}' }], 0, {{ container.id }}, null, false);">
-                {{ result.vault_id }}
-                &nbsp;<span class="fa fa-caret-down" style="font-size: smaller;"></span>
-              </a>
-            </td>
-          </tr>
-        {% else %}
-          {% if result.message %}<p>{{ result.message }}</p>{% endif %}
-        {% endif %}
-      </table>
-      <br>
-      {% if result.vault_file_path %}
-        <img src="/download?document={{ result.vault_file_path }}&id={{ result.vault_file_id }}"
-             alt="screenshot">
       {% endif %}
-      <!------------------- For each Result END ---------------------->
-    {% endfor %}
-    <!-- loop for each result end -->
+      {% if result.vault_id %}
+        <tr>
+          <td>
+            <b>Vault ID</b>
+          </td>
+          <td>
+            <a href="javascript:;"
+               onclick="context_menu(this, [{'contains': ['sha1', 'vault id'], 'value': '{{ result.vault_id }}' }], 0, {{ container.id }}, null, false);">
+              {{ result.vault_id }}
+              &nbsp;<span class="fa fa-caret-down" style="font-size: smaller;"></span>
+            </a>
+          </td>
+        </tr>
+      {% else %}
+        {% if result.message %}<p>{{ result.message }}</p>{% endif %}
+      {% endif %}
+      </table>
+    <br>
+    {% if result.vault_file_path %}
+      <img src="/download?document={{ result.vault_file_path }}&id={{ result.vault_file_id }}"
+           alt="screenshot">
+    {% endif %}
+    <!------------------- For each Result END ---------------------->
+  {% endfor %}
+  <!-- loop for each result end -->
   </div>
-  <!-- Main Div -->
+<!-- Main Div -->
 {% endblock %}
 <!-- Main Start Block -->
