@@ -147,6 +147,7 @@ class SsmachineConnector(BaseConnector):
 
     def _make_rest_call(self, result, params=None, headers=None, json=None, method="get", stream=False):
         url = self._rest_url
+        params = dict(params or {})
         params["key"] = self._api_key
         params["cacheLimit"] = self.cache_limit
 
@@ -179,6 +180,7 @@ class SsmachineConnector(BaseConnector):
         return self._parse_response(result, r)
 
     def _download_screenshot(self, action_result, params):
+        params = dict(params or {})
         params["key"] = self._api_key
         params["cacheLimit"] = self.cache_limit
 
@@ -314,7 +316,9 @@ class SsmachineConnector(BaseConnector):
     def _get_sspermalink(self, params, method="get"):
         method = method.upper()
         # allow the permalink to retrieve from cache
+        params = dict(params or {})
         params.pop("cacheLimit", None)
+        params.pop("key", None)
         try:
             req = requests.Request(method=method, url=self._rest_url, params=params)
             r = req.prepare()
