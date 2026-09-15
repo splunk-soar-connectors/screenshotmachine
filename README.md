@@ -1,7 +1,7 @@
 # Screenshot Machine
 
 Publisher: Splunk <br>
-Connector Version: 3.0.7 <br>
+Connector Version: 3.0.8 <br>
 Product Vendor: Screenshot Machine <br>
 Product Name: Screenshot Machine <br>
 Minimum Product Version: 6.3.0
