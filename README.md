@@ -4,7 +4,7 @@ Publisher: Splunk <br>
 Connector Version: 3.0.8 <br>
 Product Vendor: Screenshot Machine <br>
 Product Name: Screenshot Machine <br>
-Minimum Product Version: 6.3.0
+Minimum Product Version: 7.0.0
 
 This app integrates with the Screenshot Machine service
 
@@ -59,15 +59,17 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 
 ### Supported Actions
 
-[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration <br>
+[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration. <br>
 [get screenshot](#action-get-screenshot) - Get a screenshot of a URL
 
 ## action: 'test connectivity'
 
-Validate the asset configuration for connectivity using supplied configuration
+Validate the asset configuration for connectivity using supplied configuration.
 
 Type: **test** <br>
 Read only: **True**
+
+Basic test for app.
 
 #### Action Parameters
 
@@ -75,7 +77,12 @@ No parameters are required for this action
 
 #### Action Output
 
-No Output
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string | | success failure |
+action_result.message | string | | |
+summary.total_objects | numeric | | 1 |
+summary.total_objects_successful | numeric | | 1 |
 
 ## action: 'get screenshot'
 
@@ -99,19 +106,24 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
-action_result.status | string | | success failed |
-action_result.parameter.delay | string | | 200 3000 |
-action_result.parameter.dimension | string | | 122x123 123xfull |
+action_result.status | string | | success failure |
+action_result.message | string | | |
+action_result.parameter.url | string | `url` `domain` | |
+action_result.parameter.dimension | string | | |
 action_result.parameter.filename | string | | |
-action_result.parameter.url | string | `url` `domain` | https://www.testurl.com |
-action_result.data | string | | |
+action_result.parameter.delay | string | | |
+action_result.data.\*.name | string | `url` | https://www.testurl.com_screenshot.jpg |
+action_result.data.\*.permalink | string | `url` | |
+action_result.data.\*.size | numeric | | 48692 |
+action_result.data.\*.vault_file_id | numeric | | 123 |
+action_result.data.\*.vault_file_path | string | | /opt/phantom/vault/02/5a/025a0aed68c79a9dc14fa11654ed9a21d521f79e |
+action_result.data.\*.vault_id | string | `vault id` `sha1` | 025a0aed68c79a9dc14fa11654ed9a21d521f79e |
 action_result.summary.name | string | `url` | https://www.testurl.com_screenshot.jpg |
 action_result.summary.permalink | string | `url` | |
 action_result.summary.size | numeric | | 48692 |
 action_result.summary.vault_file_id | numeric | | 123 |
 action_result.summary.vault_file_path | string | | /opt/phantom/vault/02/5a/025a0aed68c79a9dc14fa11654ed9a21d521f79e |
 action_result.summary.vault_id | string | `vault id` `sha1` | 025a0aed68c79a9dc14fa11654ed9a21d521f79e |
-action_result.message | string | | Screenshot downloaded successfully |
 summary.total_objects | numeric | | 1 |
 summary.total_objects_successful | numeric | | 1 |
 
