@@ -14,7 +14,7 @@
 # and limitations under the License.
 
 from soar_sdk.abstract import SOARClient
-from soar_sdk.action_results import ActionResult, OutputField, PermissiveActionOutput
+from soar_sdk.action_results import OutputField, PermissiveActionOutput
 from soar_sdk.exceptions import ActionFailure
 from soar_sdk.params import Param, Params
 
@@ -49,16 +49,8 @@ class ScreenshotOutput(PermissiveActionOutput):
     vault_id: str = OutputField(cef_types=["vault id", "sha1"], example_values=["025a0aed68c79a9dc14fa11654ed9a21d521f79e"])
 
 
-class ScreenshotViewOutput(PermissiveActionOutput):
-    file_name: str | None = OutputField(alias="name")
-    vault_file_id: int | None = None
-    vault_file_path: str | None = None
-    vault_id: str | None = None
-    message: str | None = None
-
-
 @app.view_handler(template="display_scrshot.html")
-def _render_screenshots(output: list[ScreenshotViewOutput]) -> dict:
+def render_screenshots(output: list[ScreenshotOutput]) -> dict:
     return {
         "results": [
             {
@@ -66,34 +58,10 @@ def _render_screenshots(output: list[ScreenshotViewOutput]) -> dict:
                 "vault_file_name": item.file_name,
                 "vault_file_id": item.vault_file_id,
                 "vault_file_path": item.vault_file_path,
-                "message": item.message,
             }
             for item in output
         ]
     }
-
-
-def display_scrshot(action: str, all_app_runs: list[tuple[dict, list[ActionResult]]], context: dict) -> str:
-    # Legacy actions stored screenshot metadata only in summary. Adapt it before
-    # the SDK parses data, using rendering copies to leave historical results intact.
-    view_app_runs = []
-    for app_summary, action_results in all_app_runs:
-        view_results = []
-        for result in action_results:
-            view_result = result
-            if not result.get_data():
-                summary = result.get_summary() or {}
-                if summary.get("vault_id"):
-                    view_result = ActionResult(True, result.get_message())
-                    view_result.add_data(dict(summary))
-                elif not result.get_status() and result.get_message():
-                    # Failed actions have no output data, so preserve their message
-                    # as a view-only row for the template.
-                    view_result = ActionResult(False, result.get_message())
-                    view_result.add_data({"message": result.get_message()})
-            view_results.append(view_result)
-        view_app_runs.append((app_summary, view_results))
-    return _render_screenshots(action, view_app_runs, context)
 
 
 @app.action(
@@ -104,7 +72,7 @@ def display_scrshot(action: str, all_app_runs: list[tuple[dict, list[ActionResul
     read_only=True,
     versions="EQ(*)",
     summary_type=ScreenshotOutput,
-    view_handler=display_scrshot,
+    view_handler=render_screenshots,
     verbose="For the <b>dimensions</b> parameter, follow the instructions below<br> <ul> <li>value should be in format [width]x[height]. Default value is 120x90.</li><li>width can be any <b>natural number greater than or equals to 100 and smaller or equals to 1920.</b></li><li>height can be any <b>natural number greater than or equals to 100 and smaller or equals to 9999.</b> Also <b>full</b> value is accepted if you want to capture full length webpage screenshot.</li></ul>Examples:<br>320x240 - website thumbnail size 320x240 pixels<br>800x600 - website snapshot size 800x600 pixels<br>1024x768 - web screenshot size 1024x768 pixels<br>1920x1080 - webpage screenshot size 1920x1080 pixels<br>1024xfull - full page screenshot with width equals to 1024 pixels (can be pretty long).<br><br> For the <b>delay</b> parameter, Use higher values for websites which take more to time load before capturing the screenshot. <br> Allowed values are: (0, 200,400, 600, 800, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000).",
 )
 def get_screenshot(params: GetScreenshotParams, soar: SOARClient, asset: Asset) -> ScreenshotOutput:

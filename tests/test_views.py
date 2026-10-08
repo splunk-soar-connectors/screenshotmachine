@@ -12,12 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from copy import deepcopy
-
 import pytest
 from soar_sdk.action_results import ActionResult
 
-from src.actions.get_screenshot import display_scrshot
+from src.actions.get_screenshot import render_screenshots
 
 
 @pytest.fixture
@@ -26,77 +24,76 @@ def view_context():
 
 
 def screenshot_metadata(name):
-    return {"name": name, "size": 6, "vault_id": "unit-test-vault-id", "vault_file_id": 123, "vault_file_path": "/vault/image.jpg"}
+    return {
+        "name": name,
+        "size": 6,
+        "vault_id": "unit-test-vault-id",
+        "vault_file_id": 123,
+        "vault_file_path": "/vault/image.jpg",
+    }
 
 
 def app_run(*results):
     return ({"total_objects": len(results), "total_objects_successful": len(results)}, list(results))
 
 
-@pytest.mark.parametrize("filename, escaped", [("legacy.jpg", "legacy.jpg"), ("<script>alert(1)</script>.jpg", "&lt;script&gt;")])
-def test_legacy_summary_only_result_renders_without_mutation(view_context, filename, escaped):
+def test_sdk_output_renders_file_info_and_escapes_filename(view_context):
     result = ActionResult(True, "Screenshot downloaded successfully")
-    metadata = screenshot_metadata(filename)
-    result.set_summary(metadata)
-    original_summary = deepcopy(metadata)
-    assert result.get_data() == []
+    result.add_data(screenshot_metadata("<script>alert(1)</script>.jpg"))
 
-    rendered = display_scrshot("get_screenshot", [app_run(result)], view_context)
+    rendered = render_screenshots("get_screenshot", [app_run(result)], view_context)
 
-    assert escaped in rendered
+    assert "&lt;script&gt;" in rendered
     assert "<script>alert(1)</script>" not in rendered
     assert "unit-test-vault-id" in rendered
     assert "/download?document=/vault/image.jpg&id=123" in rendered
     assert ", 42, null, false)" in rendered
     assert rendered.index("File Name") < rendered.index("Vault ID")
     assert view_context["prerender"] is True
-    assert result.get_data() == []
-    assert result.get_summary() == original_summary
 
 
-@pytest.mark.parametrize("same_app_run", [False, True])
-def test_mixed_legacy_and_sdk_app_runs_render_once_in_original_order(view_context, same_app_run):
-    legacy = ActionResult(True, "Screenshot downloaded successfully")
-    legacy.set_summary(screenshot_metadata("legacy.jpg"))
-    sdk = ActionResult(True, "Screenshot downloaded successfully")
-    metadata = screenshot_metadata("sdk.jpg")
-    sdk.add_data(metadata)
-    sdk.set_summary(metadata)
+def test_multiple_sdk_outputs_render_in_original_order(view_context):
+    first = ActionResult(True, "Screenshot downloaded successfully")
+    first.add_data(screenshot_metadata("first.jpg"))
+    second = ActionResult(True, "Screenshot downloaded successfully")
+    second.add_data(screenshot_metadata("second.jpg"))
 
-    runs = [app_run(legacy, sdk)] if same_app_run else [app_run(legacy), app_run(sdk)]
-    rendered = display_scrshot("get_screenshot", runs, view_context)
+    rendered = render_screenshots("get_screenshot", [app_run(first), app_run(second)], view_context)
 
-    assert rendered.count("legacy.jpg") == 1
-    assert rendered.count("sdk.jpg") == 1
-    assert rendered.index("legacy.jpg") < rendered.index("sdk.jpg")
-    assert rendered.count("/download?document=/vault/image.jpg&id=123") == 2
-    assert legacy.get_data() == []
-    assert sdk.get_data() == [metadata]
+    assert rendered.count("first.jpg") == 1
+    assert rendered.count("second.jpg") == 1
+    assert rendered.index("first.jpg") < rendered.index("second.jpg")
 
 
-def test_existing_sdk_data_takes_precedence_over_summary(view_context):
+def test_view_uses_output_data_and_ignores_summary(view_context):
     result = ActionResult(True, "Screenshot downloaded successfully")
-    metadata = {**screenshot_metadata("sdk.jpg"), "extra_api_field": {"nested": [1, 2]}}
-    result.add_data(metadata)
+    result.add_data(screenshot_metadata("sdk.jpg"))
     result.set_summary(screenshot_metadata("summary-only.jpg"))
-    original_data = deepcopy(result.get_data())
-    original_summary = deepcopy(result.get_summary())
 
-    rendered = display_scrshot("get_screenshot", [app_run(result)], view_context)
+    rendered = render_screenshots("get_screenshot", [app_run(result)], view_context)
 
     assert rendered.count("sdk.jpg") == 1
     assert "summary-only.jpg" not in rendered
-    assert result.get_data() == original_data
-    assert result.get_summary() == original_summary
 
 
-def test_empty_result_does_not_create_invalid_screenshot(view_context):
+def test_summary_only_result_is_not_adapted_to_sdk_output(view_context):
     result = ActionResult(True, "Screenshot downloaded successfully")
+    result.set_summary(screenshot_metadata("legacy.jpg"))
 
-    rendered = display_scrshot("get_screenshot", [app_run(result)], view_context)
+    rendered = render_screenshots("get_screenshot", [app_run(result)], view_context)
 
     assert "ssmachine_display" in rendered
-    assert "File Info" not in rendered
+    assert "No screenshot data found" in rendered
+    assert "legacy.jpg" not in rendered
     assert "/download?document=" not in rendered
     assert "Error in view function" not in rendered
-    assert result.get_data() == []
+
+
+def test_failed_result_does_not_create_screenshot_output(view_context):
+    result = ActionResult(False, "Screenshot Machine returned an error: invalid_url")
+
+    rendered = render_screenshots("get_screenshot", [app_run(result)], view_context)
+
+    assert "No screenshot data found" in rendered
+    assert "/download?document=" not in rendered
+    assert "Error in view function" not in rendered

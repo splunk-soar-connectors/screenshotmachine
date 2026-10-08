@@ -28,7 +28,7 @@ from soar_sdk.action_results import ActionResult
 from soar_sdk.cli.manifests.serializers import OutputsSerializer
 from soar_sdk.exceptions import ActionFailure
 
-from src.actions.get_screenshot import GetScreenshotParams, ScreenshotOutput, display_scrshot, get_screenshot
+from src.actions.get_screenshot import GetScreenshotParams, ScreenshotOutput, get_screenshot, render_screenshots
 from src.app import Asset, app, test_connectivity as connectivity_action
 from src.consts import (
     DEFAULT_REQUEST_TIMEOUT,
@@ -304,7 +304,7 @@ def test_widget_renders_vault_links_and_escapes_filename():
     )
     result = ActionResult(True, "Screenshot downloaded successfully")
     result.add_data(output.model_dump(by_alias=True, exclude_none=True))
-    rendered = display_scrshot(
+    rendered = render_screenshots(
         "get_screenshot",
         [({"total_objects": 1, "total_objects_successful": 1}, [result])],
         {"QS": {}, "container": 42, "app": 153, "no_connection": False, "google_maps_key": False},

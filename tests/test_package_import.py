@@ -17,11 +17,11 @@ import sys
 from pathlib import Path
 
 
-def test_root_package_exposes_custom_view_in_fresh_interpreter():
+def test_root_package_exposes_sdk_view_handler_in_fresh_interpreter():
     # A fresh interpreter reproduces SOAR's root-package view lookup; other tests
     # have already imported the action module and would hide missing imports.
     subprocess.run(
-        [sys.executable, "-c", "import src; assert callable(src.actions.get_screenshot.display_scrshot)"],
+        [sys.executable, "-c", "import src; assert callable(src.actions.get_screenshot.render_screenshots)"],
         cwd=Path(__file__).resolve().parents[1],
         check=True,
         capture_output=True,

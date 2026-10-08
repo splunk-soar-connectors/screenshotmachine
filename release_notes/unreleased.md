@@ -6,5 +6,4 @@
 * Change the test connectivity identifier from test_asset_connectivity to test_connectivity.
 * Convert the screenshot widget to SDK Jinja2 rendering, using SDK default sizing and title.
 * Add vault metadata to action_result.data for rendering while retaining the summary fields.
-* Support rendering historical screenshots with summary-only results and mixed legacy/SDK results.
 * Treat Screenshot Machine error images marked with the X-Screenshotmachine-Response header as failed requests instead of saving them as screenshots.
