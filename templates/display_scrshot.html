@@ -77,33 +77,35 @@
       <!-- loop for each result -->
       <br>
       <!------------------- For each Result ---------------------->
-      {% if result.vault_file_name %}
+      {% if result.vault_file_name or result.vault_id %}
         <h3 class="wf-h3-style">File Info</h3>
         <table class="wf-table-vertical">
-          <tr>
-            <td>
-              <b>File Name</b>
-            </td>
-            <td>{{ result.vault_file_name }}</td>
-          </tr>
-        {% endif %}
-        {% if result.vault_id %}
-          <tr>
-            <td>
-              <b>Vault ID</b>
-            </td>
-            <td>
-              <a href="javascript:;"
-                 onclick="context_menu(this, [{'contains': ['sha1', 'vault id'], 'value': '{{ result.vault_id }}' }], 0, {{ container }}, null, false);">
-                {{ result.vault_id }}
-                &nbsp;<span class="fa fa-caret-down" style="font-size: smaller;"></span>
-              </a>
-            </td>
-          </tr>
-        {% else %}
-          {% if result.message %}<p>{{ result.message }}</p>{% endif %}
-        {% endif %}
-      </table>
+          {% if result.vault_file_name %}
+            <tr>
+              <td>
+                <b>File Name</b>
+              </td>
+              <td>{{ result.vault_file_name }}</td>
+            </tr>
+          {% endif %}
+          {% if result.vault_id %}
+            <tr>
+              <td>
+                <b>Vault ID</b>
+              </td>
+              <td>
+                <a href="javascript:;"
+                   onclick="context_menu(this, [{'contains': ['sha1', 'vault id'], 'value': '{{ result.vault_id }}' }], 0, {{ container }}, null, false);">
+                  {{ result.vault_id }}
+                  &nbsp;<span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                </a>
+              </td>
+            </tr>
+          {% endif %}
+        </table>
+      {% elif result.message %}
+        <p>{{ result.message }}</p>
+      {% endif %}
       <br>
       {% if result.vault_file_path %}
         <img src="/download?document={{ result.vault_file_path }}&id={{ result.vault_file_id }}"

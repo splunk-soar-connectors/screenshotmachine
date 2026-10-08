@@ -48,8 +48,17 @@ class ScreenshotOutput(PermissiveActionOutput):
     vault_file_path: str = OutputField(example_values=["/opt/phantom/vault/02/5a/025a0aed68c79a9dc14fa11654ed9a21d521f79e"])
     vault_id: str = OutputField(cef_types=["vault id", "sha1"], example_values=["025a0aed68c79a9dc14fa11654ed9a21d521f79e"])
 
+
+class ScreenshotViewOutput(PermissiveActionOutput):
+    file_name: str | None = OutputField(alias="name")
+    vault_file_id: int | None = None
+    vault_file_path: str | None = None
+    vault_id: str | None = None
+    message: str | None = None
+
+
 @app.view_handler(template="display_scrshot.html")
-def _render_screenshots(output: list[ScreenshotOutput]) -> dict:
+def _render_screenshots(output: list[ScreenshotViewOutput]) -> dict:
     return {
         "results": [
             {
@@ -57,6 +66,7 @@ def _render_screenshots(output: list[ScreenshotOutput]) -> dict:
                 "vault_file_name": item.file_name,
                 "vault_file_id": item.vault_file_id,
                 "vault_file_path": item.vault_file_path,
+                "message": item.message,
             }
             for item in output
         ]
@@ -76,6 +86,11 @@ def display_scrshot(action: str, all_app_runs: list[tuple[dict, list[ActionResul
                 if summary.get("vault_id"):
                     view_result = ActionResult(True, result.get_message())
                     view_result.add_data(dict(summary))
+                elif not result.get_status() and result.get_message():
+                    # Failed actions have no output data, so preserve their message
+                    # as a view-only row for the template.
+                    view_result = ActionResult(False, result.get_message())
+                    view_result.add_data({"message": result.get_message()})
             view_results.append(view_result)
         view_app_runs.append((app_summary, view_results))
     return _render_screenshots(action, view_app_runs, context)
