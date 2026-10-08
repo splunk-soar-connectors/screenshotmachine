@@ -99,6 +99,9 @@ def download_screenshot(asset, params, temp_dir):
             verify=True,
             timeout=DEFAULT_REQUEST_TIMEOUT,
         ) as response:
+            custom_error = response.headers.get(SSMACHINE_CUSTOM_HTTP_RESPONSE_HEADER)
+            if custom_error:
+                raise ActionFailure(f"Screenshot Machine returned an error: {custom_error}")
             if not 200 <= response.status_code < 300:
                 raise ActionFailure(f"Screenshot Machine returned HTTP status {response.status_code}")
             if "image" not in response.headers.get("Content-Type", "").lower():

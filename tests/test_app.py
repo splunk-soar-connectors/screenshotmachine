@@ -158,6 +158,13 @@ def test_download_rejects_bad_responses(asset, post, response, tmp_path, status,
     assert not list(tmp_path.iterdir())
 
 
+def test_download_rejects_vendor_error_image(asset, post, response, tmp_path):
+    response.headers["X-Screenshotmachine-Response"] = "invalid_url"
+    with pytest.raises(ActionFailure, match="returned an error: invalid_url"):
+        download_screenshot(asset, {}, str(tmp_path))
+    assert not list(tmp_path.iterdir())
+
+
 def test_stream_failure_cleans_file_and_redacts_secret(asset, post, response, tmp_path):
     def chunks():
         yield b"partial"
