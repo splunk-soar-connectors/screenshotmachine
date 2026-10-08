@@ -310,7 +310,7 @@ def test_widget_renders_vault_links_and_escapes_filename():
     assert rendered.index("File Name") < rendered.index("Vault ID")
 
 
-def test_manifest_metadata_matches_legacy_contract():
+def test_manifest_metadata_matches_legacy_contract_except_unpopulated_data_path():
     legacy = json.loads((Path(__file__).parent / "fixtures/legacy_manifest.json").read_text())
     actions = app.get_actions()
     assert set(actions) == {"test_connectivity", "get_screenshot"}
@@ -339,6 +339,11 @@ def test_manifest_metadata_matches_legacy_contract():
         assert params[name]["primary"] == field.get("primary", False)
     outputs = {item["data_path"]: item for item in OutputsSerializer.serialize_datapaths(meta.parameters, meta.output, meta.summary_type)}
     for field in original["output"]:
+        # The legacy handler populated summary only; its whole-data output path was unused.
+        if field["data_path"] == "action_result.data":
+            assert field["data_type"] == "string"
+            assert field["data_path"] not in outputs
+            continue
         assert field["data_path"] in outputs
         assert outputs[field["data_path"]]["data_type"] == field["data_type"]
         assert outputs[field["data_path"]].get("contains") == field.get("contains")

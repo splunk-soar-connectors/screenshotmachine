@@ -48,14 +48,6 @@ class ScreenshotOutput(PermissiveActionOutput):
     vault_file_path: str = OutputField(example_values=["/opt/phantom/vault/02/5a/025a0aed68c79a9dc14fa11654ed9a21d521f79e"])
     vault_id: str = OutputField(cef_types=["vault id", "sha1"], example_values=["025a0aed68c79a9dc14fa11654ed9a21d521f79e"])
 
-    @classmethod
-    def _to_json_schema(cls, parent_datapath="action_result.data.*", column_order_counter=None):
-        # Retain the legacy whole-data datapath as well as declared SDK view fields.
-        if parent_datapath == "action_result.data.*":
-            yield {"data_path": "action_result.data", "data_type": "string"}
-        yield from super()._to_json_schema(parent_datapath, column_order_counter)
-
-
 @app.view_handler(template="display_scrshot.html")
 def _render_screenshots(output: list[ScreenshotOutput]) -> dict:
     return {

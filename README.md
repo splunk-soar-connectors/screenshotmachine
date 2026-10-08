@@ -112,7 +112,6 @@ action_result.parameter.url | string | `url` `domain` | |
 action_result.parameter.dimension | string | | |
 action_result.parameter.filename | string | | |
 action_result.parameter.delay | string | | |
-action_result.data | string | | |
 action_result.data.\*.name | string | `url` | https://www.testurl.com_screenshot.jpg |
 action_result.data.\*.permalink | string | `url` | |
 action_result.data.\*.size | numeric | | 48692 |
