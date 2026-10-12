@@ -31,23 +31,35 @@ jobs:
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
         shell: bash
 
-      - name: Pin the SDK PR commit and install the locked app environment
+      - name: Build Screenshot Machine with locked dependencies
         run: |
           cd app
-          uv add "splunk-soar-sdk @ git+https://github.com/phantomcyber/splunk-soar-sdk.git@66ee357"
-          uv lock
           uv sync --locked
+          uv run soarapps package build .
         shell: bash
 
-      - name: Build and install app on SOAR instances
-        uses: splunk-soar-connectors/.github/.github/actions/compile-app@codex/defender-ttl-ci
-        with:
-          current_phantom_ip: ${{ vars.PHANTOM_INSTANCE_CURRENT_VERSION_IP }}
-          next_phantom_ip: ${{ vars.PHANTOM_INSTANCE_NEXT_OL8_VERSION_IP }}
-          previous_phantom_ip: ${{ vars.PHANTOM_INSTANCE_PREVIOUS_VERSION_IP }}
-          phantom_username: ${{ vars.PHANTOM_USERNAME }}
-          phantom_password: password
-          is_sdkfied: 'true'
-          uv_lock_directory: app
-          insecure_sdk_install: 'true'
-          force_sdk_install: 'true'
+      - name: Install the SDK PR commit into the CLI environment
+        run: >-
+          uv pip install --python app/.venv/bin/python
+          "splunk-soar-sdk @ git+https://github.com/phantomcyber/splunk-soar-sdk.git@66ee357"
+        shell: bash
+
+      - name: Install package on SOAR instances with the SDK PR CLI
+        env:
+          CURRENT_PHANTOM_IP: ${{ vars.PHANTOM_INSTANCE_CURRENT_VERSION_IP }}
+          NEXT_PHANTOM_IP: ${{ vars.PHANTOM_INSTANCE_NEXT_OL8_VERSION_IP }}
+          PREVIOUS_PHANTOM_IP: ${{ vars.PHANTOM_INSTANCE_PREVIOUS_VERSION_IP }}
+          PHANTOM_USERNAME: ${{ vars.PHANTOM_USERNAME }}
+          PHANTOM_PASSWORD: password
+        run: |
+          TARBALL=$(find app -maxdepth 1 -name '*.tgz' -print -quit)
+          if [[ -z "$TARBALL" ]]; then
+            echo "No Screenshot Machine package tarball was built" >&2
+            exit 1
+          fi
+
+          for instance in "$CURRENT_PHANTOM_IP" "$NEXT_PHANTOM_IP" "$PREVIOUS_PHANTOM_IP"; do
+            app/.venv/bin/soarapps package install "$TARBALL" "$instance" \
+              --username "$PHANTOM_USERNAME" --insecure --force
+          done
+        shell: bash
