@@ -49,7 +49,6 @@ jobs:
           CURRENT_PHANTOM_IP: ${{ vars.PHANTOM_INSTANCE_CURRENT_VERSION_IP }}
           NEXT_PHANTOM_IP: ${{ vars.PHANTOM_INSTANCE_NEXT_OL8_VERSION_IP }}
           PREVIOUS_PHANTOM_IP: ${{ vars.PHANTOM_INSTANCE_PREVIOUS_VERSION_IP }}
-          PHANTOM_USERNAME: ${{ vars.PHANTOM_USERNAME }}
           PHANTOM_PASSWORD: password
         run: |
           TARBALL=$(find app -maxdepth 1 -name '*.tgz' -print -quit)
@@ -60,6 +59,6 @@ jobs:
 
           for instance in "$CURRENT_PHANTOM_IP" "$NEXT_PHANTOM_IP" "$PREVIOUS_PHANTOM_IP"; do
             app/.venv/bin/soarapps package install "$TARBALL" "$instance" \
-              --username "$PHANTOM_USERNAME" --insecure --force
+              --username soar_local_admin --insecure --force
           done
         shell: bash
