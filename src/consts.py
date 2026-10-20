@@ -1,4 +1,4 @@
-# File: ssmachine_consts.py
+# File: consts.py
 #
 # Copyright (c) 2016-2026 Splunk Inc.
 #
