@@ -1,6 +1,6 @@
 [project]
 name = "ssmachine"
-version = "3.0.8"
+version = "4.0.0"
 description = "This app integrates with the Screenshot Machine service"
 license = "Copyright (c) 2016-2026 Splunk Inc."
 requires-python = ">=3.13, <3.15"
