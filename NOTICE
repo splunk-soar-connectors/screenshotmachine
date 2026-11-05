@@ -4,7 +4,7 @@ Third Party Software Attributions:
 
 @@@@============================================================================
 
-Library: Authlib - 1.8.0
+Library: Authlib - 1.9.4
 Homepage: https://github.com/authlib/authlib
 License: BSD License
 License Text:
@@ -79,7 +79,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @@@@============================================================================
 
-Library: MarkupSafe - 3.0.3
+Library: MarkupSafe - 3.0.4
 Homepage: https://github.com/pallets/markupsafe/
 License: BSD-3-Clause
 License Text:
@@ -3207,7 +3207,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @@@@============================================================================
 
-Library: pydantic - 2.13.5
+Library: pydantic - 2.14.2
 Homepage: https://github.com/pydantic/pydantic
 License: MIT
 License Text:
@@ -3237,7 +3237,7 @@ SOFTWARE.
 
 @@@@============================================================================
 
-Library: pydantic_core - 2.46.5
+Library: pydantic_core - 2.50.2
 Homepage: https://github.com/pydantic
 License: MIT
 License Text:
@@ -3408,7 +3408,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 @@@@============================================================================
 
-Library: splunk-soar-sdk - 6.1.2
+Library: splunk-soar-sdk - 7.1.2
 Homepage: https://github.com/phantomcyber/splunk-soar-sdk
 License: Apache-2.0
 License Text:
